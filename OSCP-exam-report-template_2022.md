@@ -391,4 +391,4 @@ IP (Hostname) | Local.txt Contents | Proof.txt Contents
 
 For the exam, I used my Metasploit/Meterpreter allowance on the following machine: `192.168.xxx.xxx`
 
-## Appendix - Other types of code used
+## Appendix - Other types of codes that were used
