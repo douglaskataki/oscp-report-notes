@@ -1,19 +1,15 @@
 ---
-title: Offensive Security Certified Professional Exam Report
-author:
-  - student@youremailaddress.com
-  - "OSID: XXXXXX"
-date: 29-10-2023
-subject: Markdown
-keywords:
-  - Markdown
-  - Example
-subtitle: OSCP Exam Report
-lang: en
+title: "Offensive Security Certified Professional Exam Report"
+author: ["student@youremailaddress.com", "OSID: XXXX"]
+date: "2023-09-16"
+subject: "Markdown"
+keywords: [Markdown, Example]
+subtitle: "OSCP Exam Report"
+lang: "en"
 titlepage: true
-titlepage-color: 1E90FF
-titlepage-text-color: FFFAFA
-titlepage-rule-color: FFFAFA
+titlepage-color: "1E90FF"
+titlepage-text-color: "FFFAFA"
+titlepage-rule-color: "FFFAFA"
 titlepage-rule-height: 2
 book: true
 classoption: oneside
@@ -122,7 +118,7 @@ Offensive Security should not have to remove any user accounts or services from 
 
 Server IP Address | Ports Open
 ------------------|----------------------------------------
-192.168.xxx.xxx       | **TCP**: 1433,3389\
+192.168.xxx.xxx   | **TCP**: 1433,3389\
 **UDP**: 1434,161
 
 **Nmap Scan Results:**
@@ -165,7 +161,7 @@ Server IP Address | Ports Open
 **Proof of Concept Code/Exploit Code:**
 
 
-### Post-Exploitation
+### Post Exploitation
 
 **Proof Screenshot Here:**
 
@@ -177,7 +173,7 @@ Server IP Address | Ports Open
 
 Server IP Address | Ports Open
 ------------------|----------------------------------------
-192.168.xxx.xxx       | **TCP**: 1433,3389\
+192.168.xxx.xxx   | **TCP**: 1433,3389\
 **UDP**: 1434,161
 
 **Nmap Scan Results:**
@@ -220,7 +216,7 @@ Server IP Address | Ports Open
 **Proof of Concept Code/Exploit Code:**
 
 
-### Post-Exploitation
+### Post Exploitation
 
 **Proof Screenshot Here:**
 
@@ -232,7 +228,7 @@ Server IP Address | Ports Open
 
 Server IP Address | Ports Open
 ------------------|----------------------------------------
-192.168.xxx.xxx       | **TCP**: 1433,3389\
+192.168.xxx.xxx   | **TCP**: 1433,3389\
 **UDP**: 1434,161
 
 **Nmap Scan Results:**
@@ -275,7 +271,7 @@ Server IP Address | Ports Open
 **Proof of Concept Code/Exploit Code:**
 
 
-### Post-Exploitation
+### Post Exploitation
 
 **Proof Screenshot Here:**
 
@@ -287,9 +283,9 @@ Port Scan Results
 
 Server IP Address | Ports Open
 ------------------|----------------------------------------
-192.168.xxx.xxx       | **TCP**: 1433,3389\ **UDP**:
-172.16.xxx.xxx       | **TCP**: 1433,3389\ **UDP**:
-172.16.xxx.xxx       | **TCP**: 1433,3389\ **UDP**:
+192.168.xxx.xxx   | **TCP**: 1433,3389\ **UDP**:
+172.16.xxx.xxx    | **TCP**: 1433,3389\ **UDP**:
+172.16.xxx.xxx    | **TCP**: 1433,3389\ **UDP**:
 
 ## System IP: 192.168.xxx.xxx
 
@@ -331,8 +327,7 @@ Server IP Address | Ports Open
 
 **Proof of Concept Code/Exploit Code:**
 
-
-### Post-Exploitation
+### Post Exploitation
 
 **Proof Screenshot Here:**
 
@@ -379,7 +374,7 @@ Server IP Address | Ports Open
 **Proof of Concept Code/Exploit Code:**
 
 
-### Post-Exploitation
+### Post Exploitation
 
 **Proof Screenshot Here:**
 
@@ -390,6 +385,7 @@ Server IP Address | Ports Open
 **Nmap Scan Results:**
 
 ### Initial Access
+
 *Initial Shell Vulnerability Exploited*
 
 *Additional info about where the initial shell was acquired from*
@@ -426,7 +422,7 @@ Server IP Address | Ports Open
 **Proof of Concept Code/Exploit Code:**
 
 
-### Post-Exploitation
+### Post Exploitation
 
 **Proof Screenshot Here:**
 
