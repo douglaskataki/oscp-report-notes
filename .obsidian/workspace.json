@@ -1,0 +1,170 @@
+{
+  "main": {
+    "id": "b9a16fda60be49c3",
+    "type": "split",
+    "children": [
+      {
+        "id": "2e0dfb8b4f41b876",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4249dace3ae26a7b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Machine Name - 192.168.xxx.xxx.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "004053a71798ee7b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Cheatsheet - Machines.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "b37aa8eea901ee05",
+    "type": "split",
+    "children": [
+      {
+        "id": "e6ba30ca5dd57b60",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9b6dfc1abc783ab3",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "8836ba5876307775",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "e04dc4e418bdcb22",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "1f7991949499e807",
+    "type": "split",
+    "children": [
+      {
+        "id": "a17f13418fa04866",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c4ee065f8196b2c3",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Cheatsheet - Machines.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "f2d7b1472e48a5f0",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Cheatsheet - Machines.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "c1c92a8367318d05",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "0ce375c6d43f8d08",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Cheatsheet - Machines.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "9b6dfc1abc783ab3",
+  "lastOpenFiles": [
+    "Machine Name - 192.168.xxx.xxx.md",
+    "Cheatsheet - Machines.md",
+    "OSCP-exam-report-template_2022.md",
+    "Cheatsheet - AD.md",
+    "README.md"
+  ]
+}
