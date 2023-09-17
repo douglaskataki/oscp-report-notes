@@ -25,17 +25,8 @@
 
 ## Vulnerability
 
-## Steps to reproduce the attack:
-### Public Exploits
-#### Exploit DB:
-[SyncBreeze 15.2.24 - 'login' Denial of Service](https://www.exploit-db.com/exploits/51725)
-#### GitHub:
-[oscp-report-notes](https://github.com/douglaskataki/oscp-report-notes)
-### Fixing Exploits
 
-```
-Your fix code here!
-```
+## Steps to reproduce the attack:
 
 ### Antivirus Evasion
 
@@ -45,10 +36,15 @@ Your fix code here!
 
 ## Proof of Concept
 
-### Your code
+### Public Exploits
+#### Exploit DB:
+[SyncBreeze 15.2.24 - 'login' Denial of Service](https://www.exploit-db.com/exploits/51725)
+#### GitHub:
+[oscp-report-notes](https://github.com/douglaskataki/oscp-report-notes)
+### Fixing Exploits/Own Code
 
-```code here
-
+```
+Your fixed code or your own code here!
 ```
 
 ## Local.txt
@@ -65,6 +61,3 @@ Your fix code here!
 
 ## proof.txt
 ## screenshot (hash and ip configuration)
-
-
-

