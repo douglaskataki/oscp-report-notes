@@ -2,7 +2,23 @@
 
 ## Manual
 
+### Operating System
+
+### Permissions and Logged on Users
+
+### Enumeration Through Service Principal Names
+
+### Enumerating Object Permissions
+
+### Enumerating Domain Shares
+
 ## Automatic
+
+### BloodHound
+
+#### Analyzing Data
+
+#### Raw Queries
 
 # Attacking
 
@@ -32,4 +48,6 @@
 
 # Persistance
 
-## Gol
+## Golden Ticket
+
+## Shadow Ticket

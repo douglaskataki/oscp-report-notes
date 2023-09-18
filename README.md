@@ -5,4 +5,4 @@ I used [OSCP-Exam-Report-Template-Markdown ](https://github.com/noraj/OSCP-Exam-
 
 I created a template for note taking for each Independent Challenges and Active Directory Set.
 
-And maybe provide a cheatsheet to use with the exam.
+And maybe provide a cheat sheet to use with the exam.

