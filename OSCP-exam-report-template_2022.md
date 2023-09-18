@@ -1,6 +1,6 @@
 ---
 title: "Offensive Security Certified Professional Exam Report"
-author: ["student@youremailaddress.com", "OSID: XXXX"]
+author: ["student@youremailaddress.com", "OSID: XXXXXX"]
 date: "2023-09-16"
 subject: "Markdown"
 keywords: [Markdown, Example]
@@ -198,6 +198,7 @@ Server IP Address | Ports Open
 
 **Local.txt Contents**
 
+!["Rick is rolling!"](img/RickRoll.png "Rick is rolling!")
 
 ### Privilege Escalation
 
