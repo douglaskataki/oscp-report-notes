@@ -16,11 +16,22 @@ nmap -p21,22,80,139,443,445,... -sC -sV -A -T4 $rhost
 
 ## TCP
 
-### 21 - ftp
+### ftp
+
+List scripts to use with nmap:
+```
+locate *.nse | grep ftp
+```
 
 ```
-nmap -p21 --script=ftp-vuln* -A -T4 -sV $rhost
+find / -type f -name ftp* 2>/dev/null | grep scripts
 ```
+
+Nmap command only ftp port and with default scrips for ftp
+```
+nmap -p21 -sC -A -T4 -sV $rhost
+```
+Options: version scan (-sV), aggressive scan (-A), and the default script scan (-sC))
 
 Some credentials to tries:
 ```
@@ -31,7 +42,7 @@ anonymous:anonymous
 ftp:ftp
 ```
 
-Anonymous login:
+#### Anonymous login:
 ```
 ftp $rhosts
 >anonymous
@@ -42,17 +53,42 @@ ftp $rhosts
 >bye #exit
 ```
 
-Download all files from ftp:
+#### Commands:
+Get an overview of the ftp server:
 ```
-wget -m ftp://anonymous:anonymous@10.10.10.98 #Donwload all
-wget -m --no-passive ftp://anonymous:anonymous@10.10.10.98 #Download all
+status
 ```
 
-### 135,445 - smb
+Recursive listing:
+```
+ls -R
+```
+
+Download a file:
+```
+get file
+```
+
+Download all files from ftp:
+```
+wget -m --no-passive ftp://anonymous:anonymous@10.10.10.98
+```
+
+Upload a file:
+```
+put file
+```
+
+### smb
+
+Clone enum4linux repository:
+```
+git clone https://github.com/cddmp/enum4linux-ng
+```
 
 Enumeration via enum4linux:
 ```
-enum4linux $ip
+python enum4linux-ng.py $ip
 ```
 #### smbclient
 List shares (sometimes can ask for a password):
@@ -77,7 +113,85 @@ smbclient \\\\$ip\\share [-U username -P password]
 crackmapexec smb -u username -p password $ip --shares
 ```
 
+### NFS
+
+Basic nmap scan:
+```
+sudo nmap $rhosts -p111,2049 -sV -sC
+```
+
+with more scripts:
+```
+sudo nmap 10.129.14.128 -p111,2049 -sV --script nfs*
+```
+
+show available NFS shares:
+```
+showmount -e $rhosts
+```
+
+Mounting NFS Share:
+```
+mdkir target-NFS
+sudo mount -t nfs $rhosts:/ ./target-NFS -o nolock
+```
+
+List contents with usernames & groups:
+```
+ls -l target-NFS/dir/
+```
+
+Unmount NFS Share:
+```
+sudo umount ./target-NFS
+```
+
+
 ## UDP
+
+### DNS
+
+Checking SOA record:
+```
+dig soa www.website.com
+```
+
+DIG - NS Query:
+```
+dig ns website.com @dns_ip
+```
+
+DIG - Version Query:
+```
+dig CH TXT version.bind dns_ip
+```
+
+DIG - ANY Query:
+```
+dig any website.comb @dns_ip
+```
+
+DIG - AXFR Zone Transfer:
+```
+dig axfr website.comb @dns_ip
+```
+
+DIG - AXFR Zone Transfer - Internal:
+```
+dig axfr internal.website.comb @dns_ip
+```
+
+Subdomain Bruteforce:
+
+Bash script:
+```
+for sub in $(cat /secLists/Discovery/DNS/subdomains-top1million-110000.txt);do dig $sub.website.com @dns_ip | grep -v ';\|SOA' | sed -r '/^\s*$/d' | grep $sub | tee -a subdomains.txt;done
+```
+
+With dnsenum:
+```
+dnsenum --dnsserver dns_ip --enum -p 0 -s 0 -o subdomains.txt -f /secLists/Discovery/DNS/subdomains-top1million-110000.txt website.com
+```
 
 ## Web services
 
