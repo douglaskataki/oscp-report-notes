@@ -145,7 +145,195 @@ Unmount NFS Share:
 ```
 sudo umount ./target-NFS
 ```
+### SMTP
 
+Scan with nmap:
+```
+sudo nmap $rhosts -sC -sV -p25
+```
+
+Checking for an open relay
+```
+sudo nmap $rhosts -p25 --script smtp-open-relay
+```
+
+Some commands:
+
+| Command	| Description |  
+| ---------- | --------------- |  
+| AUTH PLAIN	| AUTH is a service extension used to authenticate the client.|
+| HELO	| The client logs in with its computer name and thus starts the session.|
+| MAIL FROM	| The client names the email sender.|
+| RCPT TO	| The client names the email recipient.|
+| DATA	| The client initiates the transmission of the email.|
+| RSET	| The client aborts the initiated transmission but keeps the connection between client and server.|
+| VRFY	| The client checks if a mailbox is available for message transfer.|
+| EXPN	| The client also checks if a mailbox is available for messaging with this command.|
+| NOOP	| The client requests a response from the server to prevent disconnection due to time-out.|
+| QUIT	| The client terminates the session.|
+
+To interact with the SMTP server, we can use the telnet tool to initialize a TCP connection with the SMTP server. The actual initialization of the session is done with the command mentioned above, HELO or EHLO.
+
+Send an Email:
+```
+MAIL FROM: <user1@website.com>
+RCPT TO: <user2@website.com> NOTIFY=success,failure
+DATA
+[Your data]
+QUIT
+```
+
+### IMAP/POP3
+
+#### IMAP Commands:
+
+| Command	| Description |
+| ------- | ----------- |
+|1 LOGIN username password	| User's login.|
+|1 LIST "" *	| Lists all directories.|
+|1 CREATE "INBOX"	| Creates a mailbox with a specified name.|
+|1 DELETE "INBOX"	| Deletes a mailbox.|
+|1 RENAME "ToRead" "Important"	| Renames a mailbox.|
+|1 LSUB "" *	| Returns a subset of names from the set of names that the User has declared as being active or subscribed.|
+|1 SELECT INBOX	| Selects a mailbox so that messages in the mailbox can be accessed.|
+|1 UNSELECT INBOX	| Exits the selected mailbox.|
+|1 FETCH <ID> all	| Retrieves data associated with a message in the mailbox.|
+|1 CLOSE	| Removes all messages with the Deleted flag set.|
+|1 LOGOUT	| Closes the connection with the IMAP server.|
+
+#### POP3 Commands:
+
+| Command |	Description |
+| ------- | ------------ |
+| USER | username	Identifies the user.|
+| PASS | password	Authentication of the user using its password.|
+| STAT	| Requests the number of saved emails from the server.|
+| LIST	| Requests from the server the number and size of all emails.|
+| RETR id	| Requests the server to deliver the requested email by ID.|
+| DELE id	| Requests the server to delete the requested email by ID.|
+| CAPA	| Requests the server to display the server capabilities.|
+| RSET	| Requests the server to reset the transmitted information.|
+| QUIT	| Closes the connection with the POP3 server.|
+
+OpenSSL - TLS Encrypted Interaction POP3
+```
+openssl s_client -connect $rhosts:pop3s
+```
+
+OpenSSL - TLS Encrypted Interaction IMAP
+```
+openssl s_client -connect $rhosts:imaps
+```
+
+
+Nmap scan:
+```
+sudo nmap $rhosts -sV -p110,143,993,995 -sC
+```
+
+### MySQL
+
+Nmap scan:
+```
+sudo nmap $rhosts -sV -sC -p3306 --script mysql*
+```
+
+Interaction with the MySQL Server:
+```
+mysql -u root -h $rhosts
+```
+MySQL Commands:
+
+| Command |	Description |
+| -------- | ------------ |
+| mysql -u user -ppassword -h $rhosts	| Connect to the MySQL server. There should not be a space between the '-p' flag, and the password. |
+| show databases;	| Show all databases. |
+| use database_name;	| Select one of the existing databases. |
+| show tables;	| Show all available tables in the selected database. |
+| show columns from table_name;	| Show all columns in the selected database. |
+| select * from table_name;	| Show everything in the desired table. |
+| select * from table_name where column = "string";	| Search for needed string in the desired table. |
+
+### MSSQL
+
+Nmap scan
+```
+sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 $rhosts
+```
+
+Cheat Sheet:
+[pentestmonkey](https://pentestmonkey.net/cheat-sheet/sql-injection/mssql-sql-injection-cheat-sheet)
+
+### Oracle TNS
+
+Nmap scan:
+```
+sudo nmap -p1521 -sV $rhosts --open
+```
+
+Setup tools:
+```
+#!/bin/bash
+
+sudo apt-get install libaio1 python3-dev alien python3-pip -y
+git clone https://github.com/quentinhardy/odat.git
+cd odat/
+git submodule init
+sudo submodule update
+sudo apt install oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus -y
+pip3 install cx_Oracle
+sudo apt-get install python3-scapy -y
+sudo pip3 install colorlog termcolor pycryptodome passlib python-libnmap
+sudo pip3 install argcomplete && sudo activate-global-python-argcomplete
+```
+
+Using odat:
+```
+./odat.py all -s $rhosts
+```
+
+Login:
+```
+sqlplus username/password@$rhsots/XE;
+```
+If you come across the following error sqlplus: error while loading shared libraries: libsqlplus.so: cannot open shared object file: No such file or directory, please execute the below:
+```
+sudo sh -c "echo /usr/lib/oracle/12.2/client64/lib > /etc/ld.so.conf.d/oracle-instantclient.conf";sudo ldconfig
+```
+
+List all available tables in the current database:
+```
+select table_name from all_tables;
+```
+
+Show privileges of current user:
+```
+select * from user_role_privs;
+```
+
+Trying to connect to sysdba:
+```
+sqlplus username/password@$rhsots/XE as sysdba;
+```
+
+If you have administrative privileges:
+```
+select name, password from sys.user$;
+```
+Get passwords and try to crack them offline.
+
+Upload file:
+```
+echo "Oracle File Upload Test" > testing.txt
+./odat.py utlfile -s $rhosts -d XE -U username -P password --sysdba --putFile C:\\inetpub\\wwwroot testing.txt ./testing.txt
+```
+
+Default paths:
+
+|   OS	  |  Path  |
+|  -----  |  ----  |
+|  Linux  |	/var/www/html |
+| Windows	| C:\inetpub\wwwroot |
 
 ## UDP
 
@@ -191,6 +379,23 @@ for sub in $(cat /secLists/Discovery/DNS/subdomains-top1million-110000.txt);do d
 With dnsenum:
 ```
 dnsenum --dnsserver dns_ip --enum -p 0 -s 0 -o subdomains.txt -f /secLists/Discovery/DNS/subdomains-top1million-110000.txt website.com
+```
+
+### SNMP
+
+Using snmpwalk
+```
+ snmpwalk -v2c -c public $rhosts
+```
+
+Using onesixtyone
+```
+onesixtyone -c /SecLists/Discovery/SNMP/snmp.txt $rhosts
+```
+
+Once we know a community string, we can use it with braa to brute-force the individual OIDs and enumerate the information behind them.
+```
+braa <community string>@<IP>:.1.3.6.*
 ```
 
 ## Web services
@@ -946,7 +1151,7 @@ SELECT user, authentication_string FROM mysql.user WHERE user =
 
 Connect to mssql using impacket:
 ```
-impacket-mssqlclient Administrator:Lab123@192.168.50.18 -windows-auth
+impacket-mssqlclient username:password@$rhosts -windows-auth
 ```
 
 Check version:
