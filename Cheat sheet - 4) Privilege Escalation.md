@@ -226,6 +226,9 @@ Reverse shell:
 
 ## Linux
 
+Credits:
+[Ansible Playbook Privilege Escalation](https://exploit-notes.hdks.org/exploit/linux/privilege-escalation/ansible-playbook-privilege-escalation/)
+
 ### Basic
 
 ### Automated

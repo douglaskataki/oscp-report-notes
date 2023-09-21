@@ -18,7 +18,7 @@ nmap -p21,22,80,139,443,445,... -sC -sV -A -T4 $rhost
 
 ### ftp
 
-List scripts to use with nmap:
+List ftp scripts to use with nmap:
 ```
 locate *.nse | grep ftp
 ```
@@ -334,6 +334,32 @@ Default paths:
 |  -----  |  ----  |
 |  Linux  |	/var/www/html |
 | Windows	| C:\inetpub\wwwroot |
+
+### IPMI
+
+### SSH
+
+Use sshaudit to check information about ssh service:
+```
+git clone https://github.com/jtesta/ssh-audit.git
+```
+
+```
+python3 ssh-audit.py $rhosts
+```
+
+### RSYNC
+
+Access dev share and list files:
+```
+rsync -av --list-only rsync://$rhosts/dev
+```
+
+Sync all files:
+```
+rsync -av rsync://$rhosts/dev
+```
+If Rsync is configured to use SSH to transfer files, we could modify our commands to include the `-e ssh` flag, or `-e "ssh -p2222"`
 
 ## UDP
 
