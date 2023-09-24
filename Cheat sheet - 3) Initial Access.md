@@ -233,6 +233,7 @@ With this, impacket will try to relay our hash to other machine with ip is `serv
 ### Macro attacks:
 
 [Libreoffice](https://jamesonhacking.blogspot.com/2022/03/using-malicious-libreoffice-calc-macros.html)
+[Libreoffice](https://insert-script.blogspot.com/2019/02/libreoffice-cve-2018-16858-remote-code.html)
 
 ### Mail Server
 

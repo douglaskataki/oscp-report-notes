@@ -7,17 +7,21 @@ Reveal open ports:
 sudo masscan -p1-65535,U:1-65535 $rhost --rate=1000 -e tun0
 ```
 
-Save it into a file (ports.txt) and them use this script to take out newline and add a comma at the final of each sentence:
+Save it into a file (tcpports.txt) and them use this script to take out newline and add a comma at the final of each sentence:
 ```
 cat masscan.txt | grep "/tcp" | cut -d "/" -f1 | awk '{print $4}' | sort -n  | sed '$!s/$/,/' | tr -d '\n' > tcpports.txt
 ```
 NOTE: Check also for UDP ports!
 
+```
+cat masscan.txt | grep "/udp" | cut -d "/" -f1 | awk '{print $4}' | sort -n  | sed '$!s/$/,/' | tr -d '\n' > udpports.txt
+```
+
 Then, use these ports with nmap `-sC` option
 ## nmap
 
 ```
-nmap -p`cat tcports.txt` -sC -sV -A -T4 $rhost
+nmap -p`cat tcpports.txt` -sC -sV -A -T4 $rhosts
 ```
 # Enumeration
 
