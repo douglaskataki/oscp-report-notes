@@ -6,11 +6,18 @@ Reveal open ports:
 ```
 sudo masscan -p1-65535,U:1-65535 $rhost --rate=1000 -e tun0
 ```
+
+Save it into a file (ports.txt) and them use this script to take out newline and add a comma at the final of each sentence:
+```
+cat masscan.txt | grep "/tcp" | cut -d "/" -f1 | awk '{print $4}' | sort -n  | sed '$!s/$/,/' | tr -d '\n' > tcpports.txt
+```
+NOTE: Check also for UDP ports!
+
 Then, use these ports with nmap `-sC` option
 ## nmap
 
 ```
-nmap -p21,22,80,139,443,445,... -sC -sV -A -T4 $rhost
+nmap -p`cat tcports.txt` -sC -sV -A -T4 $rhost
 ```
 # Enumeration
 
@@ -197,7 +204,7 @@ QUIT
 |1 LSUB "" *	| Returns a subset of names from the set of names that the User has declared as being active or subscribed.|
 |1 SELECT INBOX	| Selects a mailbox so that messages in the mailbox can be accessed.|
 |1 UNSELECT INBOX	| Exits the selected mailbox.|
-|1 FETCH <ID> all	| Retrieves data associated with a message in the mailbox.|
+|1 FETCH \<ID\> all	| Retrieves data associated with a message in the mailbox.|
 |1 CLOSE	| Removes all messages with the Deleted flag set.|
 |1 LOGOUT	| Closes the connection with the IMAP server.|
 

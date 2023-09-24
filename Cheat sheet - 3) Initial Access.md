@@ -1,5 +1,7 @@
 # Initial Access
 
+## [Restricted shell bypass](https://exploit-notes.hdks.org/exploit/network/protocol/restricted-shell-bypass/)
+
 ## Public Exploits
 
 user repository:
@@ -227,6 +229,10 @@ dir \\$lhost\something
 With this, impacket will try to relay our hash to other machine with ip is `server_need_access`.
 
 ## Client Side Attack
+
+### Macro attacks:
+
+[Libreoffice](https://jamesonhacking.blogspot.com/2022/03/using-malicious-libreoffice-calc-macros.html)
 
 ### Mail Server
 
