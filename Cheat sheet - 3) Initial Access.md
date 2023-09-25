@@ -306,7 +306,42 @@ You will be asked for a login. Enter the credentials founded and send the e-mail
 
 ## Pivoting
 
+kali ---> MACHINE1 (WAN) ---> MACHINE2(local network)
+
+With socat, we want to open port 2345 in MACHINE1 (WAN) and send this to access port 5432 (postgres) in MACHINE2 (local network):
+```
+socat -ddd TCP-LISTEN:2345,fork TCP:$IP_MACHINE2:5432
+```
+
+Now, we can use this command on our machine:
+```
+psql -h $IP_MACHINE1 -p 2345 -U postgres
+```
+
+Another example, using with ssh now with port 2222:
+```
+socat TCP-LISTEN:2222,fork TCP:$IP_MACHINE2:22
+```
+
+and then:
+```
+ssh user@IP_MACHINE1 -p2222
+```
+
 ### SSH Local Port Forwarding
+
+kali ---> MACHINE1 (DMZ) ---> MACHINE2 ---> MACHINE3 (local network/shares)
+
+Option `-L` is for local port forward, `-N` is to prevent a shell from being opened, the first IPADDRESS:PORT is for listening, the second IPADDRESS:PORT is to where we want to forward the packets.
+We are going to use it in machine1, because it will make our tunnel work and we have access with MACHINE2.
+```
+ssh -N -L 0.0.0.0:4455:IP_MACHINE3:445 user_machine2@$IP_MACHINE2
+```
+
+In kali machine, we can access the remote share:
+```
+smbclient -p 4455 -L //IP_MACHINE1/
+```
 
 ### SSH Dynamic Port Forwarding
 
@@ -323,5 +358,3 @@ You will be asked for a login. Enter the credentials founded and send the e-mail
 ### ssh.exe
 
 ### Chisel (very important!)
-
-### dnscat
