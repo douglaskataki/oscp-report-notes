@@ -85,6 +85,10 @@ When the parameter is unknown:
 ```
 /seclists/Discovery/Web-Content/burp-parameter-names.txt
 ```
+#### Drupal
+
+[Version 7 Remote Code Execution](https://github.com/pimps/CVE-2018-7600)
+
 ### CMS
 
 Credits:

