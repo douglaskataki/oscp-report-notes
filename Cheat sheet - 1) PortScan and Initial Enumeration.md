@@ -21,7 +21,7 @@ Then, use these ports with nmap `-sC` option
 ## nmap
 
 ```
-nmap -p`cat tcpports.txt` -sC -sV -A -T4 $rhosts
+nmap -p`cat tcpports.txt` -sC -sV -A -T4 $rhost
 ```
 # Enumeration
 
