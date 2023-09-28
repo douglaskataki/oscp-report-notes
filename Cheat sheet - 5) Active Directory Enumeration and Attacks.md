@@ -1,6 +1,34 @@
 # Enumeration
 
+## Some tips:
+In order to execute some powershell scripts:
+```
+powershell -ep bypass
+```
+
+About users (script for getting users)
+
+
 ## Manual
+Enumerate Local Accounts on the machine:
+```
+net user /domain
+```
+
+Checking admin account:
+```
+net user admin /domain
+```
+
+Enumerate roups:
+```
+net group /domain
+```
+
+Get information about Sales Department
+```
+net group "Sales Department" /domain
+```
 
 ### Operating System
 
