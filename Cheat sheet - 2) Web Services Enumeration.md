@@ -51,7 +51,7 @@ ffuf -w hosts.txt -u https://example.org/ -H "Host: FUZZ" -mc 200
 
 Virtual host discovery (without DNS records)
 ```
-ffuf -w /path/to/wordlist:FUZZ  -u https://target -H "Host: FUZZ" -fs 4242
+ffuf -w /path/to/wordlist:FUZZ  -u http://target.com -H "Host: FUZZ.target.com"
 ```
 
 GET param fuzzing, filtering for invalid response size (or whatever)
