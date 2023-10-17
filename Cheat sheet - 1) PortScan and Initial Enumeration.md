@@ -9,12 +9,12 @@ sudo masscan -p1-65535,U:1-65535 $rhost --rate=1000 -e tun0
 
 Save it into a file (tcpports.txt) and them use this script to take out newline and add a comma at the final of each sentence:
 ```
-cat masscan.txt | grep "/tcp" | cut -d "/" -f1 | awk '{print $4}' | sort -n  | sed '$!s/$/,/' | tr -d '\n' > tcpports.txt
+awk '{print $4}'  masscan.txt | grep "tcp" | cut -d "/" -f1 | sort -n  | sed '$!s/$/,/' | tr -d '\n' > tcpports.txt
 ```
 NOTE: Check also for UDP ports!
 
 ```
-cat masscan.txt | grep "/udp" | cut -d "/" -f1 | awk '{print $4}' | sort -n  | sed '$!s/$/,/' | tr -d '\n' > udpports.txt
+awk '{print $4}'  masscan.txt | grep "udp" | cut -d "/" -f1 | sort -n  | sed '$!s/$/,/' | tr -d '\n' > udpports.txt
 ```
 
 Then, use these ports with nmap `-sC` option
@@ -55,7 +55,7 @@ ftp:ftp
 
 #### Anonymous login:
 ```
-ftp $rhosts
+ftp $rhost
 >anonymous
 >anonymous
 >ls -a # List all files (even hidden) (yes, they could be hidden)
@@ -128,7 +128,7 @@ crackmapexec smb -u username -p password $ip --shares
 
 Basic nmap scan:
 ```
-sudo nmap $rhosts -p111,2049 -sV -sC
+sudo nmap $rhost -p111,2049 -sV -sC
 ```
 
 with more scripts:
@@ -138,13 +138,13 @@ sudo nmap 10.129.14.128 -p111,2049 -sV --script nfs*
 
 show available NFS shares:
 ```
-showmount -e $rhosts
+showmount -e $rhost
 ```
 
 Mounting NFS Share:
 ```
 mdkir target-NFS
-sudo mount -t nfs $rhosts:/ ./target-NFS -o nolock
+sudo mount -t nfs $rhost:/ ./target-NFS -o nolock
 ```
 
 List contents with usernames & groups:
@@ -160,12 +160,12 @@ sudo umount ./target-NFS
 
 Scan with nmap:
 ```
-sudo nmap $rhosts -sC -sV -p25
+sudo nmap $rhost -sC -sV -p25
 ```
 
 Checking for an open relay
 ```
-sudo nmap $rhosts -p25 --script smtp-open-relay
+sudo nmap $rhost -p25 --script smtp-open-relay
 ```
 
 Some commands:
@@ -228,36 +228,36 @@ QUIT
 
 OpenSSL - TLS Encrypted Interaction POP3
 ```
-openssl s_client -connect $rhosts:pop3s
+openssl s_client -connect $rhost:pop3s
 ```
 
 OpenSSL - TLS Encrypted Interaction IMAP
 ```
-openssl s_client -connect $rhosts:imaps
+openssl s_client -connect $rhost:imaps
 ```
 
 
 Nmap scan:
 ```
-sudo nmap $rhosts -sV -p110,143,993,995 -sC
+sudo nmap $rhost -sV -p110,143,993,995 -sC
 ```
 
 ### MySQL
 
 Nmap scan:
 ```
-sudo nmap $rhosts -sV -sC -p3306 --script mysql*
+sudo nmap $rhost -sV -sC -p3306 --script mysql*
 ```
 
 Interaction with the MySQL Server:
 ```
-mysql -u root -h $rhosts
+mysql -u root -h $rhost
 ```
 MySQL Commands:
 
 | Command |	Description |
 | -------- | ------------ |
-| mysql -u user -ppassword -h $rhosts	| Connect to the MySQL server. There should not be a space between the '-p' flag, and the password. |
+| mysql -u user -ppassword -h $rhost	| Connect to the MySQL server. There should not be a space between the '-p' flag, and the password. |
 | show databases;	| Show all databases. |
 | use database_name;	| Select one of the existing databases. |
 | show tables;	| Show all available tables in the selected database. |
@@ -269,7 +269,7 @@ MySQL Commands:
 
 Nmap scan
 ```
-sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 $rhosts
+sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 $rhost
 ```
 
 Cheat Sheet:
@@ -279,7 +279,7 @@ Cheat Sheet:
 
 Nmap scan:
 ```
-sudo nmap -p1521 -sV $rhosts --open
+sudo nmap -p1521 -sV $rhost --open
 ```
 
 Setup tools:
@@ -300,7 +300,7 @@ sudo pip3 install argcomplete && sudo activate-global-python-argcomplete
 
 Using odat:
 ```
-./odat.py all -s $rhosts
+./odat.py all -s $rhost
 ```
 
 Login:
@@ -336,7 +336,7 @@ Get passwords and try to crack them offline.
 Upload file:
 ```
 echo "Oracle File Upload Test" > testing.txt
-./odat.py utlfile -s $rhosts -d XE -U username -P password --sysdba --putFile C:\\inetpub\\wwwroot testing.txt ./testing.txt
+./odat.py utlfile -s $rhost -d XE -U username -P password --sysdba --putFile C:\\inetpub\\wwwroot testing.txt ./testing.txt
 ```
 
 Default paths:
@@ -356,19 +356,19 @@ git clone https://github.com/jtesta/ssh-audit.git
 ```
 
 ```
-python3 ssh-audit.py $rhosts
+python3 ssh-audit.py $rhost
 ```
 
 ### RSYNC
 
 Access dev share and list files:
 ```
-rsync -av --list-only rsync://$rhosts/dev
+rsync -av --list-only rsync://$rhost/dev
 ```
 
 Sync all files:
 ```
-rsync -av rsync://$rhosts/dev
+rsync -av rsync://$rhost/dev
 ```
 If Rsync is configured to use SSH to transfer files, we could modify our commands to include the `-e ssh` flag, or `-e "ssh -p2222"`
 
@@ -422,12 +422,12 @@ dnsenum --dnsserver dns_ip --enum -p 0 -s 0 -o subdomains.txt -f /secLists/Disco
 
 Using snmpwalk
 ```
- snmpwalk -v2c -c public $rhosts
+ snmpwalk -v2c -c public $rhost
 ```
 
 Using onesixtyone
 ```
-onesixtyone -c /SecLists/Discovery/SNMP/snmp.txt $rhosts
+onesixtyone -c /SecLists/Discovery/SNMP/snmp.txt $rhost
 ```
 
 Once we know a community string, we can use it with braa to brute-force the individual OIDs and enumerate the information behind them.

