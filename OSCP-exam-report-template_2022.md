@@ -433,8 +433,8 @@ Server IP Address | Ports Open
 
 ## Appendix - Proof and Local Contents:
 
-IP (Hostname) | Local.txt Contents | Proof.txt Contents
---------------|--------------------|-------------------
+IP (Hostname)     | Local.txt Contents | Proof.txt Contents
+------------------|--------------------|-------------------
 192.168.xxx.xxx   | hash_here          | hash_here
 172.16.xxx.xxx    | hash_here          | hash_here
 172.16.xxx.xxx    | hash_here          | hash_here

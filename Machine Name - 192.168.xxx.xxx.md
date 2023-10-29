@@ -38,8 +38,12 @@
 
 ### Public Exploits
 #### Exploit DB:
+
+Example:
 [SyncBreeze 15.2.24 - 'login' Denial of Service](https://www.exploit-db.com/exploits/51725)
 #### GitHub:
+
+Example:
 [oscp-report-notes](https://github.com/douglaskataki/oscp-report-notes)
 ### Fixing Exploits/Own Code
 
