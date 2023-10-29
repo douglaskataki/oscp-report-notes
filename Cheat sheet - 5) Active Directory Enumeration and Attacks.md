@@ -84,7 +84,7 @@ MATCH p = (c:Computer)-[:HasSession]->(m:User) RETURN p
 # Attacking
 
 
-![](img\kerberos_auth.jpg)
+![](img/kerberos_auth.jpg)
 
 ## Password Attacks
 
