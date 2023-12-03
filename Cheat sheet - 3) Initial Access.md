@@ -417,7 +417,7 @@ NOTE2: In order to automate the confirmation that we usually type when prompt, w
 ```
 .\ssh.exe -N -R 9998 kali@[your ip/tun0]
 ```
-### Chisel 
+### Chisel
 
 #### Local machine:
 Your local server:

