@@ -1,5 +1,10 @@
 ## Web services
 
+Add to /etc/hosts:
+```
+sudo echo "10.10.10.10 site.com" | sudo tee -a /etc/hosts
+```
+
 Use whatweb to check some information about the webpage:
 ```
 whatweb http://www.webpage.com

