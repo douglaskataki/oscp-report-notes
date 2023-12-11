@@ -156,6 +156,10 @@ kerbrute passwordspray -d test.local domain_users.txt password123
 
 ## AS-REP Roasting
 
+The first step of the authentication process via Kerberos is to send an AS-REQ. Based on this request, the domain controller can validate if the authentication is successful. If it is, the domain controller replies with an AS-REP containing the session key and TGT. This step is also commonly referred to as _Kerberos preauthentication_ and prevents offline password guessing.
+
+Without Kerberos preauthentication in place, an attacker could send an AS-REQ to the domain controller on behalf of any AD user. After obtaining the AS-REP from the domain controller, the attacker could perform an offline password attack against the encrypted part of the response. This attack is known as _AS-REP Roasting_.
+
 ### impacket
 ```
 impacket-GetNPUsers domain.com/ -usersfile usernames.txt -format hashcat -outputfile hashes.asreproast
@@ -244,11 +248,17 @@ impacket-psexec test.local/john:password123@10.10.10.1
 ### Impacket:
 
 #### WMI:
+
+Prerequisites: In order to create a process on the remote target via WMI, we need credentials of a member of the `Administrators` local group, which can also be a domain user.
+
 ```
 impacket-wmiexec -hashes :2892D26CDF84D7A70E2EB3B9F05C425E Administrator@$rhost
 ```
 
 #### PsExec:
+
+Prerequisites: The user that authenticates to the target machine needs to be part of the Administrators local group. In addition, the `ADMIN$` share must be available and `File and Printer Sharing` has to be turned on.
+
 ```
 impacket-psexec oscp.exam/administrator@192.168.130.102 -hashes :ba85f4e1f47633ebd44894de679fabb4
 
