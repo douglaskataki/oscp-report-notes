@@ -1,4 +1,4 @@
-# Privilege Escalation
+# Privilege Escalation and Exfiltration
 
 ## Windows
 Credits:
